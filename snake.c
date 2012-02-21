@@ -23,7 +23,8 @@ void turn_left(direction *d);
 void turn_right(direction *d);
 void kill_snake(SNAKE *snake);
 void grow_snake(SNAKE *snake, int posy, int posx);
-void move_snake(SNAKE *snake, int grow);
+int move_snake(SNAKE *snake, int grow);
+WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 
 void turn_left(direction *d) {
   *d  = (*d + 1) % MAX_DIR;
@@ -51,43 +52,81 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
   wrefresh(snake->parts[snake->length - 1]);
 }
 
-void move_snake(SNAKE *snake, int grow) {
+WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx) {
+  int i;
+  int cury, curx;
+  for(i = 0; i < snake->length; i++) {
+    getbegyx(snake->parts[i], cury, curx);
+    if(cury == posy && curx == posx) {
+      return snake->parts[i];
+    }
+  }
+  return NULL;
+}
+
+#define EVENTS 1
+int check_self_collision(SNAKE *snake, int cury, int curx) {
+  WINDOW* on;
+  return ! ((on = snake_part_is_on(snake, cury, curx)) == NULL || on == snake->parts[snake->length - 1]);
+}
+
+int check_self_collision_handler(SNAKE *snake) {
+  return 0;
+}
+
+int move_snake(SNAKE *snake, int grow) {
+  int (*collision_checks[EVENTS])(SNAKE*,int,int) = {
+    check_self_collision
+  };
+
+  int (*collision_handlers[EVENTS])(SNAKE*) = {
+    check_self_collision_handler
+  };
+  int success = 1;
   int i;
   int xdiff = snake->dir == DIR_LEFT ? -1 : (snake->dir == DIR_RIGHT ? 1 : 0);
   int ydiff = snake->dir == DIR_UP ? -1 : (snake->dir == DIR_DOWN ? 1 : 0);
-  fprintf(logf, "diff (%i|%i)\n", xdiff, ydiff);
   int curx;
   int cury; 
   int tmpy; 
   int tmpx;
   getbegyx(snake->parts[snake->length -1], cury, curx);
-  fprintf(logf, "current_pos (%i%i)\n", curx, cury);
-  mvwin(snake->parts[snake->length -1], cury + ydiff, curx + xdiff);
-  fprintf(logf, "setting to (%i|%i)\n", curx + xdiff, cury + ydiff);
-  wrefresh(snake->parts[snake->length -1]);
-  for(i = snake->length - 2; i >= 0; i--) {
-    getbegyx(snake->parts[i], tmpy, tmpx);
-    mvwin(snake->parts[i], cury, curx);
-    cury = tmpy;
-    curx = tmpx;
-    wsyncup(snake->parts[i]);
-    wrefresh(snake->parts[i]);
+  for(i = 0; i < EVENTS && success; i++) {
+    if(collision_checks[i](snake, cury + ydiff, curx + xdiff )) {
+      if(!collision_handlers[i](snake)) {
+        success = 0;
+      }
+    }
   }
+  if(success) {
+    mvwin(snake->parts[snake->length -1], cury + ydiff, curx + xdiff);
+    wrefresh(snake->parts[snake->length -1]);
+    for(i = snake->length - 2; i >= 0; i--) {
+      getbegyx(snake->parts[i], tmpy, tmpx);
+      mvwin(snake->parts[i], cury, curx);
+      cury = tmpy;
+      curx = tmpx;
+      wsyncup(snake->parts[i]);
+      wrefresh(snake->parts[i]);
+    }
 
-  if(grow) {
-    grow_snake(snake, cury, curx);
-  } else {
-    WINDOW *cur = newwin(1, 1, cury, curx);
-    wprintw(cur, "%c", '.');
-    wrefresh(cur);
-    delwin(cur);
+    if(grow) {
+      grow_snake(snake, cury, curx);
+    } else {
+      WINDOW *cur = newwin(1, 1, cury, curx);
+      wprintw(cur, "%c", '.');
+      wrefresh(cur);
+      delwin(cur);
+    }
   }
+  return success;
 }
 
 int main () {
   int ch;
   int rows;
   int columns;
+  int success = 1;
   SNAKE snake = {};
 
   logf = fopen("game.log", "w");
@@ -102,16 +141,7 @@ int main () {
 
   int x,y;
 
-  // print borders
-  for(x = 0; x < columns; x++) {
-    for(y = 0; y < rows; y++) {
-      char c = '.';
-      if(y == 0 || x == 0 || x + 1 == columns || y + 1 == rows) {
-        c = '#';
-      }
-      mvprintw(y, x, "%c", c);
-    }
-  }
+  border('#', '#', '#', '#', '#', '#', '#', '#');
   refresh();
 
   grow_snake(&snake, rows / 2, columns / 2);
@@ -131,8 +161,7 @@ int main () {
   grow_snake(&snake, rows / 2 - 5, columns / 2 - 9);
   grow_snake(&snake, rows / 2 - 6, columns / 2 - 9);
   
-  while(ch = getch()) {
-    fprintf(logf, "got char %c\n", ch);
+  while((ch = getch()) && success) {
     if( ch == KEY_UP && snake.dir != DIR_DOWN) {
       snake.dir = DIR_UP;
     } else if( ch == KEY_LEFT && snake.dir != DIR_RIGHT) {
@@ -142,8 +171,7 @@ int main () {
     } else if( ch ==  KEY_DOWN && snake.dir != DIR_UP) {
       snake.dir = DIR_DOWN;
     }
-    fprintf(logf, "new direction %i\n", snake.dir);
-    move_snake(&snake, 0);
+    success = move_snake(&snake, 0);
     refresh();
   }
   getch();
