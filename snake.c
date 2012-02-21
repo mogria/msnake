@@ -60,21 +60,27 @@ void move_snake(SNAKE *snake, int grow) {
   int cury; 
   int tmpy; 
   int tmpx;
-  getbegyx(snake->parts[0], cury, curx);
+  getbegyx(snake->parts[snake->length -1], cury, curx);
   fprintf(logf, "current_pos (%i%i)\n", curx, cury);
-  mvwin(snake->parts[0], cury + ydiff, curx + xdiff);
+  mvwin(snake->parts[snake->length -1], cury + ydiff, curx + xdiff);
   fprintf(logf, "setting to (%i|%i)\n", curx + xdiff, cury + ydiff);
-  wrefresh(snake->parts[0]);
-  for(i = 1; i < snake->length; i++) {
-    getbegyx(snake->parts[0], tmpy, tmpx);
+  wrefresh(snake->parts[snake->length -1]);
+  for(i = snake->length - 2; i >= 0; i--) {
+    getbegyx(snake->parts[i], tmpy, tmpx);
     mvwin(snake->parts[i], cury, curx);
     cury = tmpy;
     curx = tmpx;
+    wsyncup(snake->parts[i]);
     wrefresh(snake->parts[i]);
   }
 
   if(grow) {
     grow_snake(snake, cury, curx);
+  } else {
+    WINDOW *cur = newwin(1, 1, cury, curx);
+    wprintw(cur, "%c", '.');
+    wrefresh(cur);
+    delwin(cur);
   }
 }
 
@@ -109,6 +115,21 @@ int main () {
   refresh();
 
   grow_snake(&snake, rows / 2, columns / 2);
+  grow_snake(&snake, rows / 2 - 1, columns / 2);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 1);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 2);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 3);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 4);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 5);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 6);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 7);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 8);
+  grow_snake(&snake, rows / 2 - 1, columns / 2 - 9);
+  grow_snake(&snake, rows / 2 - 2, columns / 2 - 9);
+  grow_snake(&snake, rows / 2 - 3, columns / 2 - 9);
+  grow_snake(&snake, rows / 2 - 4, columns / 2 - 9);
+  grow_snake(&snake, rows / 2 - 5, columns / 2 - 9);
+  grow_snake(&snake, rows / 2 - 6, columns / 2 - 9);
   
   while(ch = getch()) {
     fprintf(logf, "got char %c\n", ch);
@@ -122,7 +143,7 @@ int main () {
       snake.dir = DIR_DOWN;
     }
     fprintf(logf, "new direction %i\n", snake.dir);
-    move_snake(&snake, 1);
+    move_snake(&snake, 0);
     refresh();
   }
   getch();
