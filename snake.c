@@ -17,6 +17,7 @@ typedef struct snake {
   WINDOW** parts;
   int length;
   direction dir;
+  int grow;
 } SNAKE;
 
 
@@ -28,7 +29,7 @@ void turn_left(direction *d);
 void turn_right(direction *d);
 void kill_snake(SNAKE *snake);
 void grow_snake(SNAKE *snake, int posy, int posx);
-int move_snake(SNAKE *snake, int grow);
+int move_snake(SNAKE *snake, FRUITS *fruits);
 WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 void kill_fruits(FRUITS* fruits);
 void kill_fruit(FRUITS *fruits, int posy, int posx);
@@ -137,8 +138,20 @@ int grow_fruit(SNAKE* snake, FRUITS *fruits) {
 
 }
 
-#define EVENTS 2
-int check_border_collision(SNAKE *snake, int cury, int curx) {
+#define EVENTS 3
+
+int check_fruit_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+  return fruit_is_on(fruits, cury, curx) != NULL;
+}
+ 
+int check_fruit_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+  kill_fruit(fruits, cury, curx);
+  grow_fruit(snake, fruits);
+  snake->grow++;
+  return 1;
+}
+
+int check_border_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
   int y,x;
   getmaxyx(stdscr, y, x);
   y--;
@@ -146,28 +159,30 @@ int check_border_collision(SNAKE *snake, int cury, int curx) {
   return cury <= 0 || curx <= 0 || cury >= y || curx >= x;
 }
 
-int check_border_collision_handler(SNAKE *snake) {
+int check_border_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
   return 0;
 }
 
-int check_self_collision(SNAKE *snake, int cury, int curx) {
+int check_self_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
   WINDOW* on;
   return ! ((on = snake_part_is_on(snake, cury, curx)) == NULL || on == snake->parts[snake->length - 1]);
 }
 
-int check_self_collision_handler(SNAKE *snake) {
+int check_self_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
   return 0;
 }
 
-int move_snake(SNAKE *snake, int grow) {
-  int (*collision_checks[EVENTS])(SNAKE*,int,int) = {
+int move_snake(SNAKE *snake, FRUITS *fruits) {
+  int (*collision_checks[EVENTS]) (SNAKE*, FRUITS*, int, int) = {
     check_border_collision,
-    check_self_collision
+    check_self_collision,
+    check_fruit_collision
   };
 
-  int (*collision_handlers[EVENTS])(SNAKE*) = {
+  int (*collision_handlers[EVENTS])(SNAKE*, FRUITS*, int, int) = {
     check_self_collision_handler,
-    check_border_collision_handler
+    check_border_collision_handler,
+    check_fruit_collision_handler
   };
   int success = 1;
   int i;
@@ -179,8 +194,8 @@ int move_snake(SNAKE *snake, int grow) {
   int tmpx;
   getbegyx(snake->parts[snake->length -1], cury, curx);
   for(i = 0; i < EVENTS && success; i++) {
-    if(collision_checks[i](snake, cury + ydiff, curx + xdiff )) {
-      if(!collision_handlers[i](snake)) {
+    if(collision_checks[i](snake, fruits, cury + ydiff, curx + xdiff)) {
+      if(!collision_handlers[i](snake, fruits, cury + ydiff, curx + xdiff)) {
         success = 0;
       }
     }
@@ -197,8 +212,9 @@ int move_snake(SNAKE *snake, int grow) {
       wrefresh(snake->parts[i]);
     }
 
-    if(grow) {
+    if(snake->grow > 0) {
       grow_snake(snake, cury, curx);
+      snake->grow--;
     } else {
       WINDOW *cur = newwin(1, 1, cury, curx);
       wprintw(cur, "%c", ' ');
@@ -273,7 +289,7 @@ int main () {
     } else if( ch ==  KEY_DOWN && snake.dir != DIR_UP) {
       snake.dir = DIR_DOWN;
     }
-    success = move_snake(&snake, 0);
+    success = move_snake(&snake, &fruits);
     refresh();
   }
   getch();
