@@ -22,19 +22,31 @@ typedef struct snake {
   int grow;
 } SNAKE;
 
+typedef struct game {
+  FRUITS fruits;
+  SNAKE snake;
+  time_t started;
+  time_t ended;
+  int highscore;
+} GAME;
+
 #define MAX_DIR 4
 
 FILE *logf;
 
-void turn_left(direction *d);
-void turn_right(direction *d);
+void kill_game(GAME *game);
 void kill_snake(SNAKE *snake);
-void grow_snake(SNAKE *snake, int posy, int posx);
-int move_snake(SNAKE *snake, FRUITS *fruits);
-WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 void kill_fruits(FRUITS* fruits);
 void kill_fruit(FRUITS *fruits, int posy, int posx);
+void grow_snake(SNAKE *snake, int posy, int posx);
+int move_snake(GAME *game);
+WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 WINDOW *fruit_is_on(FRUITS *fruits, int posy, int posx);
+
+void kill_game(GAME *game) {
+  kill_fruits(&game->fruits);
+  kill_snake(&game->snake);
+}
 
 void kill_fruits(FRUITS* fruits) {
   int i;
@@ -76,17 +88,21 @@ WINDOW *fruit_is_on(FRUITS *fruits, int posy, int posx) {
   return NULL;
 }
 
-void turn_left(direction *d) {
-  *d  = (*d + 1) % MAX_DIR;
-
-}
-
-void turn_right(direction *d) {
-  *d  = (*d - 1) % MAX_DIR;
-}
-
 void kill_snake(SNAKE *snake) {
   free(snake->parts);
+}
+
+
+WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx) {
+  int i;
+  int cury, curx;
+  for(i = 0; i < snake->length; i++) {
+    getbegyx(snake->parts[i], cury, curx);
+    if(cury == posy && curx == posx) {
+      return snake->parts[i];
+    }
+  }
+  return NULL;
 }
 
 void grow_snake(SNAKE *snake, int posy, int posx) {
@@ -104,19 +120,7 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
   wrefresh(snake->parts[snake->length - 1]);
 }
 
-WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx) {
-  int i;
-  int cury, curx;
-  for(i = 0; i < snake->length; i++) {
-    getbegyx(snake->parts[i], cury, curx);
-    if(cury == posy && curx == posx) {
-      return snake->parts[i];
-    }
-  }
-  return NULL;
-}
-
-int grow_fruit(SNAKE* snake, FRUITS *fruits) {
+int grow_fruit(GAME* game) {
   int y,x,randy,randx;
   getmaxyx(stdscr, y, x);
   y--;
@@ -124,35 +128,36 @@ int grow_fruit(SNAKE* snake, FRUITS *fruits) {
   do {
     randy = (rand() % y) + 1;
     randx = (rand() % x) + 1;
-  } while (snake_part_is_on(snake, randy, randx) != NULL && fruit_is_on(fruits, randy, randx) != NULL);
+  } while (snake_part_is_on(&game->snake, randy, randx) != NULL && fruit_is_on(&game->fruits, randy, randx) != NULL);
 
-  if(fruits->length == 0) {
-    fruits->fruits = malloc(sizeof(WINDOW*) * ++fruits->length);
+  if(game->fruits.length == 0) {
+    game->fruits.fruits = malloc(sizeof(WINDOW*) * ++game->fruits.length);
   } else {
-    fruits->fruits = realloc(fruits->fruits, sizeof(WINDOW*) * ++fruits->length);
+    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(WINDOW*) * ++game->fruits.length);
   }
   
-  fruits->fruits[fruits->length - 1] = newwin(1, 1, randy, randx);
-  wprintw(fruits->fruits[fruits->length - 1], "%c", '@');
-  wrefresh(fruits->fruits[fruits->length - 1]);
+  game->fruits.fruits[game->fruits.length - 1] = newwin(1, 1, randy, randx);
+  wprintw(game->fruits.fruits[game->fruits.length - 1], "%c", '@');
+  wrefresh(game->fruits.fruits[game->fruits.length - 1]);
 
 }
 
 #define EVENTS 3
 
-int check_fruit_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
-  return fruit_is_on(fruits, cury, curx) != NULL;
+int check_fruit_collision(GAME* game, int cury, int curx) {
+  return fruit_is_on(&game->fruits, cury, curx) != NULL;
 }
  
-int check_fruit_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
-  kill_fruit(fruits, cury, curx);
-  grow_fruit(snake, fruits);
-  snake->grow++;
+int check_fruit_collision_handler(GAME* game, int cury, int curx) {
+  kill_fruit(&game->fruits, cury, curx);
+  grow_fruit(game);
+  game->snake.grow++;
+  game->highscore++;
   fprintf(logf, "fruit collision\n");fflush(logf);
   return 1;
 }
 
-int check_border_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+int check_border_collision(GAME* game, int cury, int curx) {
   int y,x,back;
   getmaxyx(stdscr, y, x);
   y--;
@@ -160,33 +165,33 @@ int check_border_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
   return cury <= 0 || curx <= 0 || cury >= y || curx >= x;
 }
 
-int check_border_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+int check_border_collision_handler(GAME* game, int cury, int curx) {
   fprintf(logf, "border collision %i %i\n", cury, curx);fflush(logf);
   return 0;
 }
 
-int check_self_collision(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+int check_self_collision(GAME* game, int cury, int curx) {
   int back = 0;
   WINDOW* on;
   fprintf(logf, "SNAKE PART ON %i %i\n", cury, curx);fflush(logf);
-  back = ! ((on = snake_part_is_on(snake, cury, curx)) == NULL || on == snake->parts[snake->length - 1]);
+  back = ! ((on = snake_part_is_on(&game->snake, cury, curx)) == NULL || on == game->snake.parts[game->snake.length - 1]);
   fprintf(logf, "returning %i\n", back);
   return back;
 }
 
-int check_self_collision_handler(SNAKE *snake, FRUITS *fruits, int cury, int curx) {
+int check_self_collision_handler(GAME* game, int cury, int curx) {
   fprintf(logf, "self collision\n");fflush(logf);
   return 0;
 }
 
-int move_snake(SNAKE *snake, FRUITS *fruits) {
-  int (*collision_checks[EVENTS]) (SNAKE*, FRUITS*, int, int) = {
+int move_snake(GAME *game) {
+  int (*collision_checks[EVENTS]) (GAME*, int, int) = {
     check_self_collision,
     check_border_collision,
     check_fruit_collision
   };
 
-  int (*collision_handlers[EVENTS])(SNAKE*, FRUITS*, int, int) = {
+  int (*collision_handlers[EVENTS])(GAME*, int, int) = {
     check_self_collision_handler,
     check_border_collision_handler,
     check_fruit_collision_handler
@@ -194,49 +199,49 @@ int move_snake(SNAKE *snake, FRUITS *fruits) {
   int success = 1;
   int i;
   int test = 0;
-  int xdiff = snake->dir == DIR_LEFT ? -1 : (snake->dir == DIR_RIGHT ? 1 : 0);
-  int ydiff = snake->dir == DIR_UP ? -1 : (snake->dir == DIR_DOWN ? 1 : 0);
+  int xdiff = game->snake.dir == DIR_LEFT ? -1 : (game->snake.dir == DIR_RIGHT ? 1 : 0);
+  int ydiff = game->snake.dir == DIR_UP ? -1 : (game->snake.dir == DIR_DOWN ? 1 : 0);
   fprintf(logf, "diff y: %i x: %i\n", ydiff, xdiff);fflush(logf);
   int curx;
   int cury;
   int tmpy;
   int tmpx;
-  getbegyx(snake->parts[0], cury, curx);
+  getbegyx(game->snake.parts[0], cury, curx);
   cury += ydiff;
   curx += xdiff;
   for(i = 0; i < EVENTS && success; i++) {
-    if(test = collision_checks[i](snake, fruits, cury, curx)) {
+    if(test = collision_checks[i](game, cury, curx)) {
       fprintf(logf, "dafuq? %i\n", test);fflush(logf);
-      if(!collision_handlers[i](snake, fruits, cury, curx)) {
+      if(!collision_handlers[i](game, cury, curx)) {
         success = 0;
       }
     }
   }
   if(success) {
     fprintf(logf, "y: %i, x: %i\n", cury, curx);fflush(logf);
-    mvwin(snake->parts[0], cury, curx);
+    mvwin(game->snake.parts[0], cury, curx);
     fprintf(logf, "moved first window\n");fflush(logf);
-    wsyncup(snake->parts[0]);
-    wrefresh(snake->parts[0]);
+    wsyncup(game->snake.parts[0]);
+    wrefresh(game->snake.parts[0]);
     fprintf(logf, "refreshed first window\n");fflush(logf);
-    for(i = 1; i < snake->length; i++) {
-      getbegyx(snake->parts[i], tmpy, tmpx);
-      mvwin(snake->parts[i], cury, curx);
+    for(i = 1; i < game->snake.length; i++) {
+      getbegyx(game->snake.parts[i], tmpy, tmpx);
+      mvwin(game->snake.parts[i], cury, curx);
       fprintf(logf, "moved window\n");fflush(logf);
       fprintf(logf, "x: %i, y: %i\n", cury, curx);fflush(logf);
       cury = tmpy;
       curx = tmpx;
-      wsyncup(snake->parts[i]);
-      wrefresh(snake->parts[i]);
+      wsyncup(game->snake.parts[i]);
+      wrefresh(game->snake.parts[i]);
       fprintf(logf, "refreshed window\n");fflush(logf);
     }
 
 
     fprintf(logf, "going to grow?\n");fflush(logf);
-    if(snake->grow > 0) {
+    if(game->snake.grow > 0) {
       fprintf(logf, "yes\n");fflush(logf);
-      grow_snake(snake, cury, curx);
-      snake->grow--;
+      grow_snake(&game->snake, cury, curx);
+      game->snake.grow--;
     } else {
       fprintf(logf, "no\n");fflush(logf);
       WINDOW *cur = newwin(1, 1, cury, curx);
@@ -264,8 +269,10 @@ int main () {
   timer_t timer;
   struct sigevent event = {};
   event.sigev_notify = SIGEV_NONE;
-  SNAKE snake = {};
-  FRUITS fruits = {};
+
+  GAME game = {};
+  game.highscore = 0;
+  time(&game.started);
 
   srand(time(NULL));
 
@@ -282,22 +289,24 @@ int main () {
   border('#', '#', '#', '#', '#', '#', '#', '#');
   refresh();
 
-  grow_snake(&snake, rows / 2, columns / 2);
-  grow_snake(&snake, rows / 2 + 1, columns / 2);
-  fprintf(logf, "size %i\n", snake.length);fflush(logf);
+  grow_snake(&game.snake, rows / 2, columns / 2);
+  grow_snake(&game.snake, rows / 2 + 1, columns / 2);
+  fprintf(logf, "size %i\n", game.snake.length);fflush(logf);
   //snake.dir = DIR_LEFT;
 
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
-  grow_fruit(&snake, &fruits);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
+  grow_fruit(&game);
 
   int timerc = timer_create(CLOCK_REALTIME, &event, &timer);
   fprintf(logf, "timerc: %i\n", timerc);
@@ -310,27 +319,30 @@ int main () {
       ch = ich;
     }
     if((int)get_delay.it_value.tv_sec == 0 && (int)get_delay.it_value.tv_nsec > nsec_before) {
-      if( ch == KEY_UP && snake.dir != DIR_DOWN) {
-        snake.dir = DIR_UP;
-      } else if( ch == KEY_LEFT && snake.dir != DIR_RIGHT) {
-        snake.dir = DIR_LEFT;
-      } else if( ch == KEY_RIGHT && snake.dir != DIR_LEFT) {
-        snake.dir = DIR_RIGHT;
-      } else if( ch ==  KEY_DOWN && snake.dir != DIR_UP) {
-        snake.dir = DIR_DOWN;
+      if( ch == KEY_UP && game.snake.dir != DIR_DOWN) {
+        game.snake.dir = DIR_UP;
+      } else if( ch == KEY_LEFT && game.snake.dir != DIR_RIGHT) {
+        game.snake.dir = DIR_LEFT;
+      } else if( ch == KEY_RIGHT && game.snake.dir != DIR_LEFT) {
+        game.snake.dir = DIR_RIGHT;
+      } else if( ch ==  KEY_DOWN && game.snake.dir != DIR_UP) {
+        game.snake.dir = DIR_DOWN;
       }
-      success = move_snake(&snake, &fruits);
+      success = move_snake(&game);
       refresh();
       timer_settime(timer, 0, &delay, NULL);
     }
     nsec_before = (long)get_delay.it_value.tv_nsec;
   }
-  
   timer_delete(timer);
+  
+  time(&game.ended);
+  
+  //display_highscore(&game);
+
   getch();
   endwin();
-  kill_snake(&snake);
-  kill_fruits(&fruits);
+  kill_game(&game);
   fclose(logf);
   return 0;
 }
