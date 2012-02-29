@@ -1,3 +1,5 @@
+#include <time.h>
+#include <signal.h>
 #include <curses.h>
 #include <stdlib.h>
 
@@ -108,13 +110,10 @@ WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx) {
   int cury, curx;
   for(i = 0; i < snake->length; i++) {
     getbegyx(snake->parts[i], cury, curx);
-    fprintf(logf, "%i == %i && %i == %i\n", posy, cury, posx, curx);fflush(logf);
     if(cury == posy && curx == posx) {
-      fprintf(logf, "OK\n");fflush(logf);
       return snake->parts[i];
     }
   }
-  fprintf(logf, "nothing foun\n"); fflush(logf);
   return NULL;
 }
 
@@ -251,22 +250,49 @@ int move_snake(SNAKE *snake, FRUITS *fruits) {
   return success;
 }
 
+void timersighandler(int sig, siginfo_t *si, void *uc) {
+  signal(sig, SIG_IGN);
+}
+
 int main () {
-  int ch;
+  int ch, ich;
   int rows;
   int columns;
   int success = 1;
+  struct itimerspec delay;
+  delay.it_interval.tv_sec = 1;
+  delay.it_interval.tv_nsec = 0;
+  delay.it_value.tv_sec = delay.it_interval.tv_sec;
+  delay.it_value.tv_nsec = delay.it_interval.tv_nsec;
+  timer_t timer;
+  struct sigevent event = {};
+  event.sigev_notify = SIGEV_SIGNAL;
+  event.sigev_signo = SIGRTMIN;
+  event.sigev_value.sival_ptr = &timer;
   SNAKE snake = {};
+  sigset_t mask;
+  struct sigaction sa = {};
+  sa.sa_flags = SA_SIGINFO;
+  sa.sa_sigaction = timersighandler;
+  sigemptyset(&sa.sa_mask);
+  if(sigaction(SIGRTMIN, &sa, NULL) == -1) {
+    perror("sigaction"); exit(EXIT_FAILURE);
+  }
+
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGRTMIN);
+  if(sigprocmask(SIG_SETMASK, &mask, NULL) == -1) {
+    perror("sigprocmask"); exit(EXIT_FAILURE);
+  }
+
   FRUITS fruits = {};
 
   srand(time(NULL));
 
   logf = fopen("game.log", "w");
   initscr();
-  halfdelay(1);
+  nodelay(stdscr, TRUE);
   noecho();
-  //nonl();
-  //intrflush(stdscr, FALSE);
   keypad(stdscr, TRUE);
 
   getmaxyx(stdscr, rows, columns);
@@ -278,6 +304,7 @@ int main () {
 
   grow_snake(&snake, rows / 2, columns / 2);
   grow_snake(&snake, rows / 2 + 1, columns / 2);
+  fprintf(logf, "size %i\n", snake.length);fflush(logf);
   //snake.dir = DIR_LEFT;
 
   grow_fruit(&snake, &fruits);
@@ -291,20 +318,37 @@ int main () {
   grow_fruit(&snake, &fruits);
   grow_fruit(&snake, &fruits);
   grow_fruit(&snake, &fruits);
+
+  int timerc = timer_create(CLOCK_REALTIME, &event, &timer);
+  fprintf(logf, "timerc: %i\n", timerc);
+  timer_settime(timer, 0, &delay, NULL);
   
-  while((ch = getch()) && success) {
-    if( ch == KEY_UP && snake.dir != DIR_DOWN) {
-      snake.dir = DIR_UP;
-    } else if( ch == KEY_LEFT && snake.dir != DIR_RIGHT) {
-      snake.dir = DIR_LEFT;
-    } else if( ch == KEY_RIGHT && snake.dir != DIR_LEFT) {
-      snake.dir = DIR_RIGHT;
-    } else if( ch ==  KEY_DOWN && snake.dir != DIR_UP) {
-      snake.dir = DIR_DOWN;
-    }
-    success = move_snake(&snake, &fruits);
-    refresh();
+  if(sigprocmask(SIG_UNBLOCK, &mask, NULL) == -1) {
+    perror("sigprocmask"); exit(EXIT_FAILURE);
   }
+  while((ich = getch()) && success && ch != 'x') {
+    int overrun = timer_getoverrun(timer);
+    fprintf(logf, "overun: %i c: %i\n", overrun, ich);
+    if(ich != ERR) {
+      ch = ich;
+    }
+    if(overrun) {
+      if( ch == KEY_UP && snake.dir != DIR_DOWN) {
+        snake.dir = DIR_UP;
+      } else if( ch == KEY_LEFT && snake.dir != DIR_RIGHT) {
+        snake.dir = DIR_LEFT;
+      } else if( ch == KEY_RIGHT && snake.dir != DIR_LEFT) {
+        snake.dir = DIR_RIGHT;
+      } else if( ch ==  KEY_DOWN && snake.dir != DIR_UP) {
+        snake.dir = DIR_DOWN;
+      }
+      success = move_snake(&snake, &fruits);
+      refresh();
+      timer_settime(timer, 0, &delay, NULL);
+    }
+  }
+  
+  timer_delete(timer);
   getch();
   endwin();
   kill_snake(&snake);
