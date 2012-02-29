@@ -22,7 +22,6 @@ typedef struct snake {
   int grow;
 } SNAKE;
 
-
 #define MAX_DIR 4
 
 FILE *logf;
@@ -250,41 +249,22 @@ int move_snake(SNAKE *snake, FRUITS *fruits) {
   return success;
 }
 
-void timersighandler(int sig, siginfo_t *si, void *uc) {
-  signal(sig, SIG_IGN);
-}
-
 int main () {
   int ch, ich;
   int rows;
   int columns;
   int success = 1;
+  long nsec_before = 1000000;
   struct itimerspec delay;
-  delay.it_interval.tv_sec = 1;
-  delay.it_interval.tv_nsec = 0;
+  struct itimerspec get_delay;
+  delay.it_interval.tv_sec = 0;
+  delay.it_interval.tv_nsec = 50000000;
   delay.it_value.tv_sec = delay.it_interval.tv_sec;
   delay.it_value.tv_nsec = delay.it_interval.tv_nsec;
   timer_t timer;
   struct sigevent event = {};
-  event.sigev_notify = SIGEV_SIGNAL;
-  event.sigev_signo = SIGRTMIN;
-  event.sigev_value.sival_ptr = &timer;
+  event.sigev_notify = SIGEV_NONE;
   SNAKE snake = {};
-  sigset_t mask;
-  struct sigaction sa = {};
-  sa.sa_flags = SA_SIGINFO;
-  sa.sa_sigaction = timersighandler;
-  sigemptyset(&sa.sa_mask);
-  if(sigaction(SIGRTMIN, &sa, NULL) == -1) {
-    perror("sigaction"); exit(EXIT_FAILURE);
-  }
-
-  sigemptyset(&mask);
-  sigaddset(&mask, SIGRTMIN);
-  if(sigprocmask(SIG_SETMASK, &mask, NULL) == -1) {
-    perror("sigprocmask"); exit(EXIT_FAILURE);
-  }
-
   FRUITS fruits = {};
 
   srand(time(NULL));
@@ -323,16 +303,13 @@ int main () {
   fprintf(logf, "timerc: %i\n", timerc);
   timer_settime(timer, 0, &delay, NULL);
   
-  if(sigprocmask(SIG_UNBLOCK, &mask, NULL) == -1) {
-    perror("sigprocmask"); exit(EXIT_FAILURE);
-  }
   while((ich = getch()) && success && ch != 'x') {
-    int overrun = timer_getoverrun(timer);
-    fprintf(logf, "overun: %i c: %i\n", overrun, ich);
+    timer_gettime(timer, &get_delay);
+    //fprintf(logf, "interval: %i.%i valute: %i.%i\n", (int)get_delay.it_interval.tv_sec, (int)get_delay.it_interval.tv_nsec, (int)get_delay.it_value.tv_sec, (int)get_delay.it_value.tv_nsec);
     if(ich != ERR) {
       ch = ich;
     }
-    if(overrun) {
+    if((int)get_delay.it_value.tv_sec == 0 && (int)get_delay.it_value.tv_nsec > nsec_before) {
       if( ch == KEY_UP && snake.dir != DIR_DOWN) {
         snake.dir = DIR_UP;
       } else if( ch == KEY_LEFT && snake.dir != DIR_RIGHT) {
@@ -346,6 +323,7 @@ int main () {
       refresh();
       timer_settime(timer, 0, &delay, NULL);
     }
+    nsec_before = (long)get_delay.it_value.tv_nsec;
   }
   
   timer_delete(timer);
