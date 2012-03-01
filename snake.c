@@ -261,8 +261,10 @@ void display_highscore(GAME *game) {
   getmaxyx(stdscr, sy, sx);
   win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
-  mvwprintw(win, 1, 1, "GAME OVER");
-  mvwprintw(win, 2, 1, "Highscore: %i", game->highscore);
+  mvwprintw(win, 1, 1, "------------- GAME  OVER -------------");
+  mvwprintw(win, 2, 1, "--------------------------------------");
+  mvwprintw(win, 3, 1, "highscore : %i", game->highscore);
+  mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started));
   wrefresh(win);
   while(getch() != ERR);
   delwin(win);
@@ -286,9 +288,8 @@ int main () {
 
   GAME game = {};
   game.highscore = 0;
-  time(&game.started);
 
-  srand(time(NULL));
+  srand(game.started = time(NULL));
 
   logf = fopen("game.log", "w");
   initscr();
