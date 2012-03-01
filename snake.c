@@ -42,6 +42,7 @@ void grow_snake(SNAKE *snake, int posy, int posx);
 int move_snake(GAME *game);
 WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 WINDOW *fruit_is_on(FRUITS *fruits, int posy, int posx);
+void display_highscore();
 
 void kill_game(GAME *game) {
   kill_fruits(&game->fruits);
@@ -137,7 +138,7 @@ int grow_fruit(GAME* game) {
   }
   
   game->fruits.fruits[game->fruits.length - 1] = newwin(1, 1, randy, randx);
-  wprintw(game->fruits.fruits[game->fruits.length - 1], "%c", '@');
+  wprintw(game->fruits.fruits[game->fruits.length - 1], "%c", 'x');
   wrefresh(game->fruits.fruits[game->fruits.length - 1]);
 
 }
@@ -254,6 +255,19 @@ int move_snake(GAME *game) {
   return success;
 }
 
+void display_highscore(GAME *game) {
+  int sx, sy; 
+  WINDOW *win;
+  getmaxyx(stdscr, sy, sx);
+  win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
+  wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+  mvwprintw(win, 1, 1, "GAME OVER");
+  mvwprintw(win, 2, 1, "Highscore: %i", game->highscore);
+  wrefresh(win);
+  while(getch() != ERR);
+  delwin(win);
+}
+
 int main () {
   int ch, ich;
   int rows;
@@ -263,7 +277,7 @@ int main () {
   struct itimerspec delay;
   struct itimerspec get_delay;
   delay.it_interval.tv_sec = 0;
-  delay.it_interval.tv_nsec = 50000000;
+  delay.it_interval.tv_nsec = 10000000;
   delay.it_value.tv_sec = delay.it_interval.tv_sec;
   delay.it_value.tv_nsec = delay.it_interval.tv_nsec;
   timer_t timer;
@@ -294,19 +308,10 @@ int main () {
   fprintf(logf, "size %i\n", game.snake.length);fflush(logf);
   //snake.dir = DIR_LEFT;
 
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
-  grow_fruit(&game);
+  int i; 
+  for(i = 0; i < 50; i++) {
+    grow_fruit(&game);
+  }
 
   int timerc = timer_create(CLOCK_REALTIME, &event, &timer);
   fprintf(logf, "timerc: %i\n", timerc);
@@ -338,7 +343,7 @@ int main () {
   
   time(&game.ended);
   
-  //display_highscore(&game);
+  display_highscore(&game);
 
   getch();
   endwin();
