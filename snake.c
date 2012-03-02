@@ -270,7 +270,39 @@ void display_highscore(GAME *game) {
   delwin(win);
 }
 
-int main () {
+
+#define MENU_ENTRIES 2
+#define MENU_LINES (MENU_ENTRIES + 2)
+
+
+int display_menu() {
+  WINDOW *win;
+  int sx, sy, ch, i;
+  char menu[MENU_LINES][41] = {
+  "---------------- MENU ----------------",
+  "--------------------------------------",
+  "1) Start the game",
+  "2) Exit"
+  };
+  getmaxyx(stdscr, sy, sx);
+  win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
+  wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+
+  for(i = 1; i <= MENU_LINES; i++) {
+    mvwprintw(win, i, 1, "%s", menu[i - 1]);
+  }
+  wrefresh(win);
+  refresh();
+
+  while(ch = getch()) {
+    if(ch == ERR) continue;
+    if(ch >= '0' && ch <= '9') {
+      return ch - '0';
+    }
+  }
+}
+
+void run() {
   int ch, ich;
   int rows;
   int columns;
@@ -289,30 +321,24 @@ int main () {
   GAME game = {};
   game.highscore = 0;
 
-  srand(game.started = time(NULL));
-
-  logf = fopen("game.log", "w");
-  initscr();
-  nodelay(stdscr, TRUE);
-  noecho();
-  keypad(stdscr, TRUE);
-
-  getmaxyx(stdscr, rows, columns);
-
   int x,y;
-
   border('#', '#', '#', '#', '#', '#', '#', '#');
   refresh();
 
+  getmaxyx(stdscr, rows, columns); // get the dimensions of the terminal
+
+  // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
   grow_snake(&game.snake, rows / 2 + 1, columns / 2);
   fprintf(logf, "size %i\n", game.snake.length);fflush(logf);
-  //snake.dir = DIR_LEFT;
+  game.snake.dir = DIR_LEFT;
 
   int i; 
   for(i = 0; i < 50; i++) {
     grow_fruit(&game);
   }
+  
+  time(&game.started);
 
   int timerc = timer_create(CLOCK_REALTIME, &event, &timer);
   fprintf(logf, "timerc: %i\n", timerc);
@@ -341,14 +367,42 @@ int main () {
     nsec_before = (long)get_delay.it_value.tv_nsec;
   }
   timer_delete(timer);
-  
   time(&game.ended);
-  
   display_highscore(&game);
-
-  getch();
-  endwin();
   kill_game(&game);
+}
+
+int main() {
+  int action;
+  // for some better random numbers
+  srand(time(NULL));
+  
+  // logfile for debugging
+  logf = fopen("game.log", "w");
+
+  // start the curses mode
+  initscr();
+  //getch returns ERR if no input is present and doesn't wait
+  nodelay(stdscr, TRUE);
+  //don't echo the inserted keys to the screen
+  noecho();
+  //also grab keys like F1 etc.
+  keypad(stdscr, TRUE);
+
+
+  do {
+    // display the menu
+    action = display_menu();
+    if(action == 1) {
+      run();
+    }
+
+  } while(action != 2);
+
+  // end the curses mode
+  endwin();
+  
+  // close the logfile
   fclose(logf);
-  return 0;
+  return EXIT_SUCCESS;
 }
