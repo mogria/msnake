@@ -299,12 +299,12 @@ void display_highscore(GAME *game) {
   mvwprintw(win, 2, 1, "--------------------------------------");
   mvwprintw(win, 3, 1, "highscore : %i", game->highscore);
   mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started));
-  mvwprintw(win, 6, 1, "press any key to continue.");
+  mvwprintw(win, 6, 1, "press enter key to continue ");
   wrefresh(win);
   while(ch = wgetch(win)) {
-    if(ch != ERR) {
+    if(ch == '\n') {
       break;
-    }
+    } 
   }
   delwin(win);
 }
