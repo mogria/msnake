@@ -2,6 +2,8 @@
 #include <signal.h>
 #include <curses.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
 
 typedef enum {
   DIR_UP = 0,
@@ -32,8 +34,6 @@ typedef struct game {
 
 #define MAX_DIR 4
 
-FILE *logf;
-
 void kill_game(GAME *game);
 void kill_snake(SNAKE *snake);
 void kill_fruits(FRUITS* fruits);
@@ -43,6 +43,40 @@ int move_snake(GAME *game);
 WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 WINDOW *fruit_is_on(FRUITS *fruits, int posy, int posx);
 void display_highscore();
+void glog(const char *format, ... );
+
+#define LOG_FILE "game.log"
+void glog(const char *format, ... ) {
+  va_list args;
+  static FILE *logfile = NULL;
+
+  char *fformat;
+  int length = strlen(format) + 2;
+ 
+  if(logfile == NULL) {
+    logfile = fopen(LOG_FILE, "w");
+    if(logfile == NULL) {
+      fprintf(stderr, "Cannot open logfile %s\n", LOG_FILE);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if(format != NULL) {
+    fformat = malloc(sizeof(char) * length);
+    strncpy(fformat, format, length - 2);
+    fformat[length - 2] = '\n';
+    fformat[length - 1] = '\0';
+
+    va_start(args, format);
+    vfprintf(logfile, fformat, args);
+    fflush(logfile);
+    free(fformat);
+    va_end(args);
+  } else {
+    fclose(logfile);
+  }
+
+}
 
 void kill_game(GAME *game) {
   kill_fruits(&game->fruits);
@@ -154,7 +188,7 @@ int check_fruit_collision_handler(GAME* game, int cury, int curx) {
   grow_fruit(game);
   game->snake.grow++;
   game->highscore++;
-  fprintf(logf, "fruit collision\n");fflush(logf);
+  glog("fruit collision");
   return 1;
 }
 
@@ -167,21 +201,21 @@ int check_border_collision(GAME* game, int cury, int curx) {
 }
 
 int check_border_collision_handler(GAME* game, int cury, int curx) {
-  fprintf(logf, "border collision %i %i\n", cury, curx);fflush(logf);
+  glog("border collision %i %i", cury, curx);
   return 0;
 }
 
 int check_self_collision(GAME* game, int cury, int curx) {
   int back = 0;
   WINDOW* on;
-  fprintf(logf, "SNAKE PART ON %i %i\n", cury, curx);fflush(logf);
+  glog("SNAKE PART ON %i %i", cury, curx);
   back = ! ((on = snake_part_is_on(&game->snake, cury, curx)) == NULL || on == game->snake.parts[game->snake.length - 1]);
-  fprintf(logf, "returning %i\n", back);
+  glog("returning %i", back);
   return back;
 }
 
 int check_self_collision_handler(GAME* game, int cury, int curx) {
-  fprintf(logf, "self collision\n");fflush(logf);
+  glog("self collision");
   return 0;
 }
 
@@ -202,7 +236,7 @@ int move_snake(GAME *game) {
   int test = 0;
   int xdiff = game->snake.dir == DIR_LEFT ? -1 : (game->snake.dir == DIR_RIGHT ? 1 : 0);
   int ydiff = game->snake.dir == DIR_UP ? -1 : (game->snake.dir == DIR_DOWN ? 1 : 0);
-  fprintf(logf, "diff y: %i x: %i\n", ydiff, xdiff);fflush(logf);
+  glog("diff y: %i x: %i", ydiff, xdiff);
   int curx;
   int cury;
   int tmpy;
@@ -212,51 +246,51 @@ int move_snake(GAME *game) {
   curx += xdiff;
   for(i = 0; i < EVENTS && success; i++) {
     if(test = collision_checks[i](game, cury, curx)) {
-      fprintf(logf, "dafuq? %i\n", test);fflush(logf);
+      glog("dafuq? %i", test);
       if(!collision_handlers[i](game, cury, curx)) {
         success = 0;
       }
     }
   }
   if(success) {
-    fprintf(logf, "y: %i, x: %i\n", cury, curx);fflush(logf);
+    glog("y: %i, x: %i", cury, curx);
     mvwin(game->snake.parts[0], cury, curx);
-    fprintf(logf, "moved first window\n");fflush(logf);
+    glog("moved first window");
     wsyncup(game->snake.parts[0]);
     wrefresh(game->snake.parts[0]);
-    fprintf(logf, "refreshed first window\n");fflush(logf);
+    glog("refreshed first window");
     for(i = 1; i < game->snake.length; i++) {
       getbegyx(game->snake.parts[i], tmpy, tmpx);
       mvwin(game->snake.parts[i], cury, curx);
-      fprintf(logf, "moved window\n");fflush(logf);
-      fprintf(logf, "x: %i, y: %i\n", cury, curx);fflush(logf);
+      glog("moved window");
+      glog("x: %i, y: %i", cury, curx);
       cury = tmpy;
       curx = tmpx;
       wsyncup(game->snake.parts[i]);
       wrefresh(game->snake.parts[i]);
-      fprintf(logf, "refreshed window\n");fflush(logf);
+      glog("refreshed window");
     }
 
 
-    fprintf(logf, "going to grow?\n");fflush(logf);
+    glog("going to grow?");
     if(game->snake.grow > 0) {
-      fprintf(logf, "yes\n");fflush(logf);
+      glog("yes");
       grow_snake(&game->snake, cury, curx);
       game->snake.grow--;
     } else {
-      fprintf(logf, "no\n");fflush(logf);
+      glog("no");
       WINDOW *cur = newwin(1, 1, cury, curx);
       wprintw(cur, "%c", ' ');
       wrefresh(cur);
       delwin(cur);
     }
   }
-  fprintf(logf, "back\n");fflush(logf);
+  glog("back");
   return success;
 }
 
 void display_highscore(GAME *game) {
-  int sx, sy; 
+  int sx, sy, ch; 
   WINDOW *win;
   getmaxyx(stdscr, sy, sx);
   win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
@@ -265,8 +299,13 @@ void display_highscore(GAME *game) {
   mvwprintw(win, 2, 1, "--------------------------------------");
   mvwprintw(win, 3, 1, "highscore : %i", game->highscore);
   mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started));
+  mvwprintw(win, 6, 1, "press any key to continue.");
   wrefresh(win);
-  while(getch() != ERR);
+  while(ch = wgetch(win)) {
+    if(ch != ERR) {
+      break;
+    }
+  }
   delwin(win);
 }
 
@@ -292,14 +331,14 @@ int display_menu() {
     mvwprintw(win, i, 1, "%s", menu[i - 1]);
   }
   wrefresh(win);
-  refresh();
 
-  while(ch = getch()) {
+  while(ch = wgetch(win)) {
     if(ch == ERR) continue;
     if(ch >= '0' && ch <= '9') {
       return ch - '0';
     }
   }
+  return 0;
 }
 
 void run() {
@@ -330,7 +369,7 @@ void run() {
   // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
   grow_snake(&game.snake, rows / 2 + 1, columns / 2);
-  fprintf(logf, "size %i\n", game.snake.length);fflush(logf);
+  glog("size %i", game.snake.length);
   game.snake.dir = DIR_LEFT;
 
   int i; 
@@ -341,12 +380,11 @@ void run() {
   time(&game.started);
 
   int timerc = timer_create(CLOCK_REALTIME, &event, &timer);
-  fprintf(logf, "timerc: %i\n", timerc);
+  glog("timerc: %i", timerc);
   timer_settime(timer, 0, &delay, NULL);
   
   while((ich = getch()) && success && ch != 'x') {
     timer_gettime(timer, &get_delay);
-    //fprintf(logf, "interval: %i.%i valute: %i.%i\n", (int)get_delay.it_interval.tv_sec, (int)get_delay.it_interval.tv_nsec, (int)get_delay.it_value.tv_sec, (int)get_delay.it_value.tv_nsec);
     if(ich != ERR) {
       ch = ich;
     }
@@ -377,9 +415,6 @@ int main() {
   // for some better random numbers
   srand(time(NULL));
   
-  // logfile for debugging
-  logf = fopen("game.log", "w");
-
   // start the curses mode
   initscr();
   //getch returns ERR if no input is present and doesn't wait
@@ -389,7 +424,8 @@ int main() {
   //also grab keys like F1 etc.
   keypad(stdscr, TRUE);
 
-
+  glog("void");
+  glog("void%s", "ness");
   do {
     // display the menu
     action = display_menu();
@@ -403,6 +439,6 @@ int main() {
   endwin();
   
   // close the logfile
-  fclose(logf);
+  glog(NULL);
   return EXIT_SUCCESS;
 }
