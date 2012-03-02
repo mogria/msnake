@@ -389,13 +389,13 @@ void run() {
       ch = ich;
     }
     if((int)get_delay.it_value.tv_sec == 0 && (int)get_delay.it_value.tv_nsec > nsec_before) {
-      if( ch == KEY_UP && game.snake.dir != DIR_DOWN) {
+      if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
         game.snake.dir = DIR_UP;
-      } else if( ch == KEY_LEFT && game.snake.dir != DIR_RIGHT) {
+      } else if((ch == KEY_LEFT || ch == 'a') && game.snake.dir != DIR_RIGHT) {
         game.snake.dir = DIR_LEFT;
-      } else if( ch == KEY_RIGHT && game.snake.dir != DIR_LEFT) {
+      } else if((ch == KEY_RIGHT || ch == 'd') && game.snake.dir != DIR_LEFT) {
         game.snake.dir = DIR_RIGHT;
-      } else if( ch ==  KEY_DOWN && game.snake.dir != DIR_UP) {
+      } else if((ch == KEY_DOWN || ch == 's') && game.snake.dir != DIR_UP) {
         game.snake.dir = DIR_DOWN;
       }
       success = move_snake(&game);
@@ -424,8 +424,6 @@ int main() {
   //also grab keys like F1 etc.
   keypad(stdscr, TRUE);
 
-  glog("void");
-  glog("void%s", "ness");
   do {
     // display the menu
     action = display_menu();
