@@ -4,5 +4,4 @@ all:
 	gcc -o bin/snake src/snake.c -lcurses -lrt
 
 clean:
-	rm -rf bin/snake
-	rmdir bin
+	rm -rf bin
