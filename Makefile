@@ -1,6 +1,8 @@
 
 all:
-	gcc -o snake snake.c -lcurses -lrt
+	[ ! -d bin ] && mkdir bin
+	gcc -o bin/snake src/snake.c -lcurses -lrt
 
 clean:
-	rm -rf snake
+	rm -rf bin/snake
+	rmdir bin
