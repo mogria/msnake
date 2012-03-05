@@ -5,43 +5,11 @@
 #include <stdarg.h>
 #include <string.h>
 
-typedef enum {
-  DIR_UP = 0,
-  DIR_RIGHT = 1,
-  DIR_DOWN = 2,
-  DIR_LEFT = 3
-} direction;
+#include "types.h"
+#include "game.h"
+#include "snake.h"
+#include "fruits.h"
 
-typedef struct fruits {
-  WINDOW** fruits;
-  int length;
-} FRUITS;
-
-typedef struct snake {
-  WINDOW** parts;
-  int length;
-  direction dir;
-  int grow;
-} SNAKE;
-
-typedef struct game {
-  FRUITS fruits;
-  SNAKE snake;
-  time_t started;
-  time_t ended;
-  int highscore;
-} GAME;
-
-#define MAX_DIR 4
-
-void kill_game(GAME *game);
-void kill_snake(SNAKE *snake);
-void kill_fruits(FRUITS* fruits);
-void kill_fruit(FRUITS *fruits, int posy, int posx);
-void grow_snake(SNAKE *snake, int posy, int posx);
-int move_snake(GAME *game);
-WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
-WINDOW *fruit_is_on(FRUITS *fruits, int posy, int posx);
 void display_highscore();
 void glog(const char *format, ... );
 

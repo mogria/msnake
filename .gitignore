@@ -2,3 +2,5 @@ snake
 *~
 .sw*
 game.log
+*.o
+bin/*
