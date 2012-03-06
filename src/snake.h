@@ -1,6 +1,8 @@
 
 #ifndef _SNAKE_H
 
+#include "types.h"
+
 void kill_snake(SNAKE *snake);
 void grow_snake(SNAKE *snake, int posy, int posx);
 int move_snake(GAME *game);

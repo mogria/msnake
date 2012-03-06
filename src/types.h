@@ -2,6 +2,10 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#include <time.h>
+#include <curses.h>
+#include <stdlib.h>
+
 // represents a direction on a 2d map
 typedef enum {
   DIR_UP = 0,
@@ -32,5 +36,7 @@ typedef struct game {
   time_t ended;
   int highscore;
 } GAME;
+
+#include "glog.h"
 
 #endif /* _TYPES_H */
