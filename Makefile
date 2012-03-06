@@ -14,3 +14,6 @@ all: clean
 
 clean:
 	rm -rf bin
+
+install:
+	[ -f bin/snake ] && cp bin/snake /usr/games/bin/msnake
