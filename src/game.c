@@ -19,7 +19,7 @@ long long timeval_diff(struct timeval* tv1, struct timeval* tv2) {
     add = 1;
   }
   diff |= mikro;
-  diff |= (tv2->tv_sec - tv1->tv_sec - add) << (sizeof(suseconds_t) * 8) ;
+  diff |= (tv2->tv_sec - tv1->tv_sec - add) * 2 * 32;
   return diff;
 }
 
@@ -30,6 +30,7 @@ void run() {
   struct timeval last_time = {};
   struct timeval current_time = {};
   long long interval = 10000;
+  long long res;
 
   // create the game struct
   GAME game = {};
@@ -44,7 +45,7 @@ void run() {
   // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
   grow_snake(&game.snake, rows / 2 + 1, columns / 2);
-  glog("size %i", game.snake.length);
+  glog("size %i suseconds_t %i long long %i", game.snake.length, sizeof(suseconds_t), sizeof(long long));
   game.snake.dir = DIR_LEFT;
 
   // create some fruits on the screen
@@ -56,7 +57,6 @@ void run() {
   
   // get the time when the game started
   time(&game.started);
-
   gettimeofday(&last_time);
   while((ich = getch()) && success && ch != 'x') {
     // key typed?
@@ -65,9 +65,9 @@ void run() {
     }
     // check if we have an overrun
     gettimeofday(&current_time);
-    long long res = timeval_diff(&last_time, &current_time);
-    glog("%lli =  %i, %i.%i %i.%i", res, last_time.tv_sec, last_time.tv_usec, current_time.tv_sec, current_time.tv_usec);
-    if( res > interval) {
+    res = timeval_diff(&last_time, &current_time);
+    glog("res %lli", res);
+    if(res > interval) {
       // new direction? 
       if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
         game.snake.dir = DIR_UP;

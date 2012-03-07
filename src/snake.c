@@ -15,6 +15,7 @@ WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx) {
 
 void grow_snake(SNAKE *snake, int posy, int posx) {
   char schr = 'O';
+  WINDOW *win;
   if(snake->length == 0) {
     snake->parts = malloc(sizeof(WINDOW*) * ++snake->length);
     schr = '0';
@@ -22,13 +23,16 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
     snake->parts = realloc(snake->parts, sizeof(WINDOW*) * ++snake->length);
   }
   
-
-  snake->parts[snake->length - 1] = newwin(1, 1, posy, posx);
-  wprintw(snake->parts[snake->length - 1], "%c", schr);
-  wrefresh(snake->parts[snake->length - 1]);
+  snake->parts[snake->length - 1] = win = newwin(1, 1, posy, posx);
+  wprintw(win, "%c", schr);
+  wrefresh(win);
 }
 
 void kill_snake(SNAKE *snake) {
+  int i;
+  for(i = 0; i < snake->length; i++) {
+    delwin(snake->parts[0]);
+  }
   free(snake->parts);
 }
 
@@ -56,33 +60,32 @@ int move_snake(GAME *game) {
   int tmpy;
   int tmpx;
   getbegyx(game->snake.parts[0], cury, curx);
+  tmpy = cury;
+  tmpx = curx;
   cury += ydiff;
   curx += xdiff;
   for(i = 0; i < EVENTS && success; i++) {
     if(test = collision_checks[i](game, cury, curx)) {
-      glog("dafuq? %i", test);
       if(!collision_handlers[i](game, cury, curx)) {
         success = 0;
       }
     }
   }
   if(success) {
-    glog("y: %i, x: %i", cury, curx);
+    glog("part0 y: %i, x: %i", cury, curx);
     mvwin(game->snake.parts[0], cury, curx);
-    glog("moved first window");
     wsyncup(game->snake.parts[0]);
     wrefresh(game->snake.parts[0]);
-    glog("refreshed first window");
+    cury = tmpy;
+    curx = tmpx;
     for(i = 1; i < game->snake.length; i++) {
       getbegyx(game->snake.parts[i], tmpy, tmpx);
       mvwin(game->snake.parts[i], cury, curx);
-      glog("moved window");
-      glog("x: %i, y: %i", cury, curx);
+      glog("part%i y: %i, x: %i", i, cury, curx);
       cury = tmpy;
       curx = tmpx;
       wsyncup(game->snake.parts[i]);
       wrefresh(game->snake.parts[i]);
-      glog("refreshed window");
     }
 
 
