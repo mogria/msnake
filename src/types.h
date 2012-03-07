@@ -8,10 +8,10 @@
 
 // represents a direction on a 2d map
 typedef enum {
-  DIR_UP = 0,
-  DIR_RIGHT = 1,
-  DIR_DOWN = 2,
-  DIR_LEFT = 3
+  DIR_UP = '^',
+  DIR_RIGHT = '>',
+  DIR_DOWN = 'v',
+  DIR_LEFT = '<'
 } direction;
 
 // represents a collection of fruit, which can be eaten by the snake
