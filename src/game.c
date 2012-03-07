@@ -44,7 +44,6 @@ void run() {
 
   // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
-  grow_snake(&game.snake, rows / 2 + 1, columns / 2);
   glog("size %i suseconds_t %i long long %i", game.snake.length, sizeof(suseconds_t), sizeof(long long));
   game.snake.dir = DIR_LEFT;
 
