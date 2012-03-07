@@ -29,7 +29,8 @@ void run() {
   // some variables for the timer (inclusive the interval)
   struct timeval last_time = {};
   struct timeval current_time = {};
-  long long interval = 10000;
+  long long default_interval = 10000;
+  long long interval = default_interval;
   long long res;
 
   // create the game struct
@@ -59,7 +60,14 @@ void run() {
   gettimeofday(&last_time);
   while((ich = getch()) && success && ch != 'x') {
     // key typed?
-    if(ich != ERR) {
+    if(ich == ERR) {
+    } else if(ich == '0') {
+        interval = default_interval;
+    } else if(ich == '8') {
+        interval *= 1.1;
+    } else if(ich == '9') {
+        interval *= 0.9;
+    } else {
       ch = ich;
     }
     // check if we have an overrun
