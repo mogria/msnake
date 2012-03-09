@@ -1,5 +1,5 @@
 
-LIBRARIES=-lcurses
+LIBRARIES=-lcurses -lrt
 
 all: clean
 	[ ! -d bin ] && mkdir bin || true

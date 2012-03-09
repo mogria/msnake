@@ -9,16 +9,16 @@ void kill_game(GAME *game) {
 }
 
 
-long long timeval_diff(struct timeval* tv1, struct timeval* tv2) {
+long long timeval_diff(struct timespec* tv1, struct timespec* tv2) {
   long long diff = 0;
   long long test;
-  suseconds_t mikro = (tv2->tv_usec - tv1->tv_usec);
+  long nano = (tv2->tv_nsec - tv1->tv_nsec);
   int add = 0;
-  if(mikro < 0) {
-    mikro = 1000000 + mikro;
+  if(nano < 0) {
+    nano = 1000000000 + nano;
     add = 1;
   }
-  diff |= mikro;
+  diff |= nano;
   diff |= (tv2->tv_sec - tv1->tv_sec - add) * 2 * 32;
   return diff;
 }
@@ -27,9 +27,9 @@ void run() {
   int ch, ich, y, x, rows, columns, success = 1;
 
   // some variables for the timer (inclusive the interval)
-  struct timeval last_time = {};
-  struct timeval current_time = {};
-  long long default_interval = 10000;
+  struct timespec last_time = {};
+  struct timespec current_time = {};
+  long long default_interval = 20000000;
   long long interval = default_interval;
   long long res;
   short paused = 0;
@@ -64,7 +64,7 @@ void run() {
   
   // get the time when the game started
   time(&game.started);
-  gettimeofday(&last_time);
+  clock_gettime(CLOCK_REALTIME, &last_time);
   while((ich = getch()) && success && ch != 'x') {
     if(ich == 'p') {
       paused = !paused;
@@ -82,7 +82,7 @@ void run() {
         ch = ich;
       }
       // check if we have an overrun
-      gettimeofday(&current_time);
+      clock_gettime(CLOCK_REALTIME, &current_time);
       res = timeval_diff(&last_time, &current_time);
       glog("%lli", res);
       if(res > interval) {
