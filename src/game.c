@@ -32,6 +32,7 @@ void run() {
   long long default_interval = 10000;
   long long interval = default_interval;
   long long res;
+  short paused = 0;
 
   // create the game struct
   GAME game = {};
@@ -66,38 +67,43 @@ void run() {
   time(&game.started);
   gettimeofday(&last_time);
   while((ich = getch()) && success && ch != 'x') {
-    // key typed?
-    if(ich == ERR) {
-    } else if(ich == '0') {
-        interval = default_interval;
-    } else if(ich == '8') {
-        interval *= 1.1;
-    } else if(ich == '9') {
-        interval *= 0.9;
-    } else {
-      ch = ich;
+    if(ich == 'p') {
+      paused = !paused;
     }
-    // check if we have an overrun
-    gettimeofday(&current_time);
-    res = timeval_diff(&last_time, &current_time);
-    glog("res %lli", res);
-    if(res > interval) {
-      // new direction? 
-      if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
-        game.snake.dir = DIR_UP;
-      } else if((ch == KEY_LEFT || ch == 'a') && game.snake.dir != DIR_RIGHT) {
-        game.snake.dir = DIR_LEFT;
-      } else if((ch == KEY_RIGHT || ch == 'd') && game.snake.dir != DIR_LEFT) {
-        game.snake.dir = DIR_RIGHT;
-      } else if((ch == KEY_DOWN || ch == 's') && game.snake.dir != DIR_UP) {
-        game.snake.dir = DIR_DOWN;
+    if(!paused) {
+      // key typed?
+      if(ich == ERR) {
+      } else if(ich == '0') {
+          interval = default_interval;
+      } else if(ich == '8') {
+          interval *= 1.1;
+      } else if(ich == '9') {
+          interval *= 0.9;
+      } else {
+        ch = ich;
       }
-      // move the snake
-      success = move_snake(&game);
+      // check if we have an overrun
+      gettimeofday(&current_time);
+      res = timeval_diff(&last_time, &current_time);
+      glog("res %lli", res);
+      if(res > interval) {
+        // new direction? 
+        if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
+          game.snake.dir = DIR_UP;
+        } else if((ch == KEY_LEFT || ch == 'a') && game.snake.dir != DIR_RIGHT) {
+          game.snake.dir = DIR_LEFT;
+        } else if((ch == KEY_RIGHT || ch == 'd') && game.snake.dir != DIR_LEFT) {
+          game.snake.dir = DIR_RIGHT;
+        } else if((ch == KEY_DOWN || ch == 's') && game.snake.dir != DIR_UP) {
+          game.snake.dir = DIR_DOWN;
+        }
+        // move the snake
+        success = move_snake(&game);
 
-      // refresh the screen
-      refresh();
-      last_time = current_time;
+        // refresh the screen
+        refresh();
+        last_time = current_time;
+      }
     }
   }
 
