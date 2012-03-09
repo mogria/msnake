@@ -40,7 +40,7 @@ void kill_snake(SNAKE *snake) {
 int move_snake(GAME *game) {
   int (*collision_checks[EVENTS]) (GAME*, int, int) = {
     check_self_collision,
-    check_border_collision,
+    check_extended_border_collision,
     check_fruit_collision
   };
   int (*collision_handlers[EVENTS])(GAME*, int, int) = {
@@ -51,12 +51,15 @@ int move_snake(GAME *game) {
   int success = 1, i, test = 0;
   int xdiff = game->snake.dir == DIR_LEFT ? -1 : (game->snake.dir == DIR_RIGHT ? 1 : 0);
   int ydiff = game->snake.dir == DIR_UP ? -1 : (game->snake.dir == DIR_DOWN ? 1 : 0);
-  int curx, cury, tmpy, tmpx;
+  int maxx, maxy, curx, cury, tmpy, tmpx;
+  getmaxyx(stdscr, maxy, maxx);
   getbegyx(game->snake.parts[0], cury, curx);
   tmpy = cury;
   tmpx = curx;
-  cury += ydiff;
-  curx += xdiff;
+  cury = (cury + ydiff) % maxy;
+  curx = (curx + xdiff) % maxx;
+  cury = cury < 0 ? maxy + cury : cury;
+  curx = curx < 0 ? maxx + curx : curx;
   for(i = 0; i < EVENTS && success; i++) {
     if(test = collision_checks[i](game, cury, curx)) {
       if(!collision_handlers[i](game, cury, curx)) {

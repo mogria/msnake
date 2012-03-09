@@ -24,7 +24,7 @@ long long timeval_diff(struct timeval* tv1, struct timeval* tv2) {
 }
 
 void run() {
-  int ch, ich, rows, columns, success = 1;
+  int ch, ich, y, x, rows, columns, success = 1;
 
   // some variables for the timer (inclusive the interval)
   struct timeval last_time = {};
@@ -36,12 +36,19 @@ void run() {
   // create the game struct
   GAME game = {};
 
-  // create a border
-  border('#', '#', '#', '#', '#', '#', '#', '#');
-  refresh();
-
   // get the dimensions of the terminal
   getmaxyx(stdscr, rows, columns);
+
+  clear();
+  // create a border
+  for(x = 0; x < columns; x++) {
+    for(y = 0; y < rows; y++) {
+      if(check_extended_border_collision(&game, y, x)) {
+        mvprintw(y, x, "#");
+      }
+    }
+  }
+  refresh();
 
   // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
