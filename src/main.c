@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include "types.h"
-
-int display_menu();
-int display_controls();
+#include "main.h"
 
 int main() {
   int action;

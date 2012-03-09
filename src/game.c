@@ -53,7 +53,6 @@ void run() {
 
   // place the snake in the middle of the game field
   grow_snake(&game.snake, rows / 2, columns / 2);
-  glog("size %i suseconds_t %i long long %i", game.snake.length, sizeof(suseconds_t), sizeof(long long));
   game.snake.dir = DIR_LEFT;
 
   // create some fruits on the screen
@@ -85,7 +84,7 @@ void run() {
       // check if we have an overrun
       gettimeofday(&current_time);
       res = timeval_diff(&last_time, &current_time);
-      glog("res %lli", res);
+      glog("%lli", res);
       if(res > interval) {
         // new direction? 
         if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {

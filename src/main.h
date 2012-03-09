@@ -1,6 +1,9 @@
+#ifndef _MAIN_H
+#define _MAIN_H
+#include <stdlib.h>
+#include "types.h"
 
-#ifndef _GLOG_H
-#define _GLOG_H
-#define LOG_FILE "game.log"
-void glog(const char *format, ... );
-#endif /* _GLOG_H */
+int display_menu();
+int display_controls();
+
+#endif /* _MAIN_H */
