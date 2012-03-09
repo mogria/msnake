@@ -2,6 +2,7 @@
 #include "types.h"
 
 int display_menu();
+int display_controls();
 
 int main() {
   int action;
@@ -22,9 +23,11 @@ int main() {
     action = display_menu();
     if(action == 1) {
       run();
+    } else if(action == 2) {
+      display_controls();
     }
 
-  } while(action != 2);
+  } while(action != 3);
 
   // end the curses mode
   endwin();
@@ -34,8 +37,7 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-#define MENU_ENTRIES 2
-#define MENU_LINES (MENU_ENTRIES + 2)
+#define MENU_LINES (3 + 2)
 
 
 int display_menu() {
@@ -44,15 +46,16 @@ int display_menu() {
   char menu[MENU_LINES][41] = {
   "---------------- MENU ----------------",
   "--------------------------------------",
-  "1) Start the game",
-  "2) Exit"
+  "%i) Start the game",
+  "%i) Controls",
+  "%i) Exit"
   };
   getmaxyx(stdscr, sy, sx);
   win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 
   for(i = 1; i <= MENU_LINES; i++) {
-    mvwprintw(win, i, 1, "%s", menu[i - 1]);
+    mvwprintw(win, i, 1, menu[i - 1], i - 2);
   }
   wrefresh(win);
 
@@ -63,6 +66,46 @@ int display_menu() {
     }
   }
   return 0;
+}
+
+
+#define CONTROLS_ENTRIES 12
+#define CONTROLS_LINES (CONTROLS_ENTRIES + 2)
+
+int display_controls() {
+  WINDOW *win;
+  int sx, sy, ch, i;
+  char controls[CONTROLS_LINES][41] = {
+  "-------------- CONTROLS --------------",
+  "--------------------------------------",
+  "w - move up",
+  "a - move left",
+  "s - move down",
+  "d - move right",
+  "you can use the arrow keys too",
+  "",
+  "8 - slower",
+  "9 - faster",
+  "0 - reset speed",
+  "p - pause the game"
+  "",
+  "press enter to go back to the menu .."
+  };
+  getmaxyx(stdscr, sy, sx);
+  win = newwin(20, 40, sy / 2 - 10, sx / 2 - 20);
+  wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+
+  for(i = 1; i <= CONTROLS_LINES; i++) {
+    mvwprintw(win, i, 1, "%s", controls[i - 1]);
+  }
+
+  while(ch = wgetch(win)) {
+    if(ch == ERR) continue;
+    if(ch == '\n') {
+      return 0;
+    }
+  }
+
 }
 
 void display_highscore(GAME *game) {
@@ -84,6 +127,5 @@ void display_highscore(GAME *game) {
   }
   delwin(win);
 }
-
 
 
