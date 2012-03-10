@@ -5,8 +5,8 @@ void glog(const char *format, ... ) {
   static FILE *logfile = NULL;
 
   char *fformat;
-  int length = strlen(format) + 2;
- 
+  int length;
+
   if(logfile == NULL) {
     logfile = fopen(LOG_FILE, "w");
     if(logfile == NULL) {
@@ -16,6 +16,7 @@ void glog(const char *format, ... ) {
   }
 
   if(format != NULL) {
+    length = strlen(format) + 2;
     fformat = malloc(sizeof(char) * length);
     strncpy(fformat, format, length - 2);
     fformat[length - 2] = '\n';
@@ -29,5 +30,4 @@ void glog(const char *format, ... ) {
   } else {
     fclose(logfile);
   }
-
 }
