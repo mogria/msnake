@@ -24,3 +24,14 @@ Note: You need root-privileges to install this to your system
 The install script simply moves the file `bin/msnake` to `/usr/bin/msnake`.
 So, if your `PATH` is set correctly you can start the game using the command `msnake`
 
+# How to create debian package of msnake
+
+You can easily create a debian package of the msnake. If a binary does not exists the script will build one.
+The following command is to create the debian package:
+
+  $ ./makedeb.sh
+
+And with the following command you can install it:
+
+  $ sudo dpkg -i msnake.deb
+
