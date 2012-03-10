@@ -19,8 +19,6 @@ mkdir -p package/usr/bin/
 cp -rf DEBIAN package
 cp -f bin/msnake package/usr/bin
 
-#cd $basedir/..
-
 echo -n "Creating $debname ..."
 dpkg-deb -z8 -Zgzip --build package > /dev/null
 mv -f package.deb $basedir/$debname
