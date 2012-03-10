@@ -4,8 +4,8 @@ A simple snake game written in C using the ncurses library.
 
 ***
 
-**Author**:  Mogria <m0gr14@gmail.com>
-**Co-Author**:  Timo Furrer <timo.furrer@gmail.com>
+**Author**:  Mogria <m0gr14@gmail.com><br />
+**Co-Author**:  Timo Furrer <timo.furrer@gmail.com><br />
 **License**: MIT (see `LICENSE`)
 
 # How to install
