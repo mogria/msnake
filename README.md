@@ -29,9 +29,9 @@ So, if your `PATH` is set correctly you can start the game using the command `ms
 You can easily create a debian package of the msnake. If a binary does not exists the script will build one.
 The following command is to create the debian package:
 
-  $ ./makedeb.sh
+    $ ./makedeb.sh
 
 And with the following command you can install it:
 
-  $ sudo dpkg -i msnake.deb
+    $ sudo dpkg -i msnake.deb
 

@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+void redraw_snake(SNAKE *snake);
 void kill_snake(SNAKE *snake);
 void grow_snake(SNAKE *snake, int posy, int posx);
 int move_snake(GAME *game);
