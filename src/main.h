@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include "types.h"
 
+WINDOW *create_dialog();
+void wait_return();
 int display_menu();
-int display_controls();
+void display_controls();
+void display_highscore(GAME *game);
 
 #endif /* _MAIN_H */
