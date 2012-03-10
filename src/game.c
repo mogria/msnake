@@ -81,7 +81,6 @@ void run() {
     // check if we have an overrun
     clock_gettime(CLOCK_REALTIME, &current_time);
     res = timeval_diff(&last_time, &current_time);
-    glog("%lli", res);
     if(res > interval) {
       // new direction? 
       if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
