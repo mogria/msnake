@@ -16,6 +16,6 @@ cp -f bin/msnake usr/bin
 cd $basedir/..
 
 dpkg-deb -z8 -Zgzip --build $basename
-cp -f msnake.deb $basedir
+cp -f $basename.deb $basedir
 
 echo "Created msnake.deb!"
