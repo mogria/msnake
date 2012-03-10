@@ -31,7 +31,7 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
 void kill_snake(SNAKE *snake) {
   int i;
   for(i = 0; i < snake->length; i++) {
-    delwin(snake->parts[0]);
+    delwin(snake->parts[i]);
   }
   free(snake->parts);
 }
@@ -92,4 +92,12 @@ int move_snake(GAME *game) {
     }
   }
   return success;
+}
+
+void redraw_snake(SNAKE *snake) {
+  int i;
+  for(i = 0; i < snake->length; i++) {
+    redrawwin(snake->parts[i]);
+    wrefresh(snake->parts[i]);
+  }
 }

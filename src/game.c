@@ -106,6 +106,7 @@ void run() {
         case 2:
           success = 0;
         default:
+          redraw_game(&game);
           break;
       }
     }
@@ -154,4 +155,11 @@ int pause_dialog() {
   }
   return 0;
 
+}
+
+void redraw_game(GAME *game) {
+  redrawwin(stdscr);
+  refresh();
+  redraw_fruits(&game->fruits);
+  redraw_snake(&game->snake);
 }
