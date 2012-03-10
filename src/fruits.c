@@ -63,4 +63,11 @@ int grow_fruit(GAME* game) {
 
 }
 
+void redraw_fruits(FRUITS *fruits) {
+  int i;
 
+  for(i = 0; i < fruits->length; i++) {
+    redrawwin(fruits->fruits[i]);
+    wrefresh(fruits->fruits[i]);
+  }
+}

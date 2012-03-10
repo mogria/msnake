@@ -1,6 +1,7 @@
 #include "game.h"
 #include "fruits.h"
 #include "snake.h"
+#include "main.h"
 #include <time.h>
 
 void kill_game(GAME *game) {
@@ -32,7 +33,6 @@ void run() {
   long long default_interval = 20000000;
   long long interval = default_interval;
   long long res;
-  short paused = 0;
 
   // create the game struct
   GAME game = {};
@@ -66,42 +66,48 @@ void run() {
   time(&game.started);
   clock_gettime(CLOCK_REALTIME, &last_time);
   while((ich = getch()) && success && ch != 'x') {
-    if(ich == 'p') {
-      paused = !paused;
+    
+    // key typed?
+    if(ich == ERR) {
+    } else if(ich == '0') {
+        interval = default_interval;
+    } else if(ich == '8') {
+        interval *= 1.1;
+    } else if(ich == '9') {
+        interval *= 0.9;
+    } else {
+      ch = ich;
     }
-    if(!paused) {
-      // key typed?
-      if(ich == ERR) {
-      } else if(ich == '0') {
-          interval = default_interval;
-      } else if(ich == '8') {
-          interval *= 1.1;
-      } else if(ich == '9') {
-          interval *= 0.9;
-      } else {
-        ch = ich;
+    // check if we have an overrun
+    clock_gettime(CLOCK_REALTIME, &current_time);
+    res = timeval_diff(&last_time, &current_time);
+    glog("%lli", res);
+    if(res > interval) {
+      // new direction? 
+      if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
+        game.snake.dir = DIR_UP;
+      } else if((ch == KEY_LEFT || ch == 'a') && game.snake.dir != DIR_RIGHT) {
+        game.snake.dir = DIR_LEFT;
+      } else if((ch == KEY_RIGHT || ch == 'd') && game.snake.dir != DIR_LEFT) {
+        game.snake.dir = DIR_RIGHT;
+      } else if((ch == KEY_DOWN || ch == 's') && game.snake.dir != DIR_UP) {
+        game.snake.dir = DIR_DOWN;
       }
-      // check if we have an overrun
-      clock_gettime(CLOCK_REALTIME, &current_time);
-      res = timeval_diff(&last_time, &current_time);
-      glog("%lli", res);
-      if(res > interval) {
-        // new direction? 
-        if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
-          game.snake.dir = DIR_UP;
-        } else if((ch == KEY_LEFT || ch == 'a') && game.snake.dir != DIR_RIGHT) {
-          game.snake.dir = DIR_LEFT;
-        } else if((ch == KEY_RIGHT || ch == 'd') && game.snake.dir != DIR_LEFT) {
-          game.snake.dir = DIR_RIGHT;
-        } else if((ch == KEY_DOWN || ch == 's') && game.snake.dir != DIR_UP) {
-          game.snake.dir = DIR_DOWN;
-        }
-        // move the snake
-        success = move_snake(&game);
+      // move the snake
+      success = move_snake(&game);
 
-        // refresh the screen
-        refresh();
-        last_time = current_time;
+      // refresh the screen
+      refresh();
+      last_time = current_time;
+    }
+
+    if(ich == 'p') {
+      switch(pause_dialog()) {
+        case 2:
+          success = 0;
+        default:
+          redraw_game(&game);
+          break;
       }
     }
   }
@@ -113,4 +119,47 @@ void run() {
   display_highscore(&game);
   // free all the resources reserved in the game struct
   kill_game(&game);
+}
+
+#define PAUSE_LINES (2 + 2)
+
+int pause_dialog() {
+  WINDOW *win;
+  int i, ch;
+  // the contents of the dialog
+  char dialog[PAUSE_LINES][41] = {
+  "--------------- PAUSE ----------------",
+  "--------------------------------------",
+  "%i) Resume",
+  "%i) Exit"
+  };
+  
+  // get a new dialog window
+  win = create_dialog();
+
+  // insert stuff into the dialog
+  for(i = 1; i <= PAUSE_LINES; i++) {
+    mvwprintw(win, i, 1, dialog[i - 1], i - 2);
+  }
+  // display the dialog
+  wrefresh(win);
+
+  // wait for some input
+  while(ch = wgetch(win)) {
+    if(ch == ERR) continue;
+    if(ch == '\n') ch = '0';
+    if(ch >= '0' && ch <= '9') {
+      // return the number pressed
+      return ch - '0';
+    }
+  }
+  return 0;
+
+}
+
+void redraw_game(GAME *game) {
+  redrawwin(stdscr);
+  refresh();
+  redraw_fruits(&game->fruits);
+  redraw_snake(&game->snake);
 }
