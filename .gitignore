@@ -1,6 +1,11 @@
 snake
 *~
-.sw*
+*.sw*
 game.log
 *.o
 bin/*
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
