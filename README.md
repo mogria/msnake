@@ -4,8 +4,8 @@ A simple snake game written in C using the ncurses library.
 
 ***
 
-**Author**:  Mogria <m0gr14@gmail.com>  
-**Co-Author**:  Timo Furrer  
+**Author**:  Mogria <m0gr14@gmail.com>
+**Co-Author**:  Timo Furrer <timo.furrer@gmail.com>
 **License**: MIT (see `LICENSE`)
 
 # How to install
@@ -16,7 +16,7 @@ Simply enter the following command to compile the game:
     $ make
 
 After you've done that you can execute the file `bin/msnake`.
-If you want it to install this game to you system simply execute:
+If you want it to install this game to your system simply execute:
 
     # make install
 
