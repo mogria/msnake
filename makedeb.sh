@@ -7,6 +7,10 @@ debname=$basename.deb
 
 if [ ! -z $1 ]; then
   debname=$1.deb
+  if [ "${1:0:1}" == "/" ]; then
+    debname=`basename $1`.deb
+    basedir=`dirname $1`
+  fi
 fi
 
 if [ ! -f "bin/msnake" ]; then
