@@ -15,7 +15,9 @@ Simply enter the following command to compile the game:
     $ cmake .
     $ make
 
-You'll need to have `cmake` installed. You'll also need `build-essential` if you are on a debian-based distro. If you are not a debian-based distro look for similar packages in the repositories if you can't compile it.
+You'll need to have `cmake` installed. You'll also need the packages `build-essential`, `libncurses5`, `libncurses5-dev` if you are on a debian-based distro. If you are not a debian-based distro look for similar packages in the repositories if you can't compile it. Execute the following command (with root privileges) to in install the packages on debian-based systems:
+
+    # apt-get install cmake build-essential libncurses5 libncurses5-dev
 
 After you've compiled the game you can execute the file `bin/msnake` to run the game.
 If you want it to install this game to your system simply execute:
