@@ -2,11 +2,15 @@
 
 A simple snake game written in C using the ncurses library.
 
-***
+![msnake Screenshot](https://raw.github.com/mogria/msnake/master/screenshot.png)
+
+* * *
 
 **Author:**  Mogria <m0gr14@gmail.com><br />
 **Co-Author:**  Timo Furrer <timo.furrer@gmail.com><br />
 **License:** MIT (see `LICENSE`)
+
+* * *
 
 # How to install
 
