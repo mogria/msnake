@@ -1,4 +1,5 @@
 #include "game.h"
+#include "events.h"
 #include "fruits.h"
 #include "snake.h"
 #include "main.h"
@@ -12,7 +13,6 @@ void kill_game(GAME *game) {
 
 long long timeval_diff(struct timespec* tv1, struct timespec* tv2) {
   long long diff = 0;
-  long long test;
   long nano = (tv2->tv_nsec - tv1->tv_nsec);
   int add = 0;
   if(nano < 0) {
@@ -145,7 +145,7 @@ int pause_dialog() {
   wrefresh(win);
 
   // wait for some input
-  while(ch = wgetch(win)) {
+  while((ch = wgetch(win))) {
     if(ch == ERR) continue;
     if(ch == '\n') ch = '0';
     if(ch >= '0' && ch <= '9') {

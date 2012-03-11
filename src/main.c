@@ -1,4 +1,5 @@
 #include "main.h"
+#include "game.h"
 
 int main() {
   int action;
@@ -49,7 +50,7 @@ WINDOW *create_dialog() {
 
 void wait_return(WINDOW *win) {
   int ch;
-  while(ch = wgetch(win)) {
+  while((ch = wgetch(win))) {
     if(ch == '\n') {
       break;
     } 
@@ -79,7 +80,7 @@ int display_menu() {
   wrefresh(win);
 
   // wait for some input
-  while(ch = wgetch(win)) {
+  while((ch = wgetch(win))) {
     if(ch == ERR) continue;
     if(ch >= '0' && ch <= '9') {
       // return the number pressed
@@ -130,7 +131,6 @@ void display_controls() {
 
 void display_highscore(GAME *game) {
   WINDOW *win;
-  int i;
   // create a dialog
   win = create_dialog();
 

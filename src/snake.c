@@ -61,7 +61,7 @@ int move_snake(GAME *game) {
   cury = cury < 0 ? maxy + cury : cury;
   curx = curx < 0 ? maxx + curx : curx;
   for(i = 0; i < EVENTS && success; i++) {
-    if(test = collision_checks[i](game, cury, curx)) {
+    if((test = collision_checks[i](game, cury, curx))) {
       if(!collision_handlers[i](game, cury, curx)) {
         success = 0;
       }

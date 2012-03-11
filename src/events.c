@@ -7,10 +7,11 @@ int check_fruit_collision(GAME* game, int cury, int curx) {
 }
  
 int check_fruit_collision_handler(GAME* game, int cury, int curx) {
-  kill_fruit(&game->fruits, cury, curx);
-  grow_fruit(game);
-  game->snake.grow++;
-  game->highscore++;
+  FRUIT *fruit = fruit_is_on(&game->fruits, cury, curx);
+  if(fruit != NULL) {
+    fruit->effect(game);
+    kill_fruit_by_ptr(&game->fruits, fruit);
+  }
   return 1;
 }
 
@@ -33,7 +34,7 @@ int check_extended_border_collision(GAME* game, int cury, int curx) {
   rangey1 = range * 0.9;
   rangey2 = range * 1.1;
   return check_border_collision(game, cury, curx)
-    && !(curx >= rangex1 && curx <= rangex2 || cury >= rangey1 && cury <= rangey2);
+    && !((curx >= rangex1 && curx <= rangex2) || (cury >= rangey1 && cury <= rangey2));
 }
 
 int check_border_collision_handler(GAME* game, int cury, int curx) {

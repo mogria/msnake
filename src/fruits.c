@@ -50,7 +50,7 @@ FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx) {
   return NULL;
 }
 
-int grow_fruit(GAME* game) {
+void grow_fruit(GAME* game) {
   int y,x,randy,randx;
   getmaxyx(stdscr, y, x);
   y--;
