@@ -14,9 +14,15 @@ typedef enum {
   DIR_LEFT = '<'
 } direction;
 
+// represents a single fruit
+typedef struct fruit {
+  WINDOW *win;
+  void (*effect)(GAME *);
+} FRUIT;
+
 // represents a collection of fruit, which can be eaten by the snake
 typedef struct fruits {
-  WINDOW** fruits;
+  FRUIT* fruits;
   int length;
 } FRUITS;
 
