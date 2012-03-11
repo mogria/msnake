@@ -30,7 +30,6 @@ void kill_fruit_by_ptr(FRUITS *fruits, FRUIT *fruit) {
 }
 
 void kill_fruit_at_pos(FRUITS *fruits, int i) {
-  free(&fruits->fruits[i]);
   for(i++; i < fruits->length; i++) {
     fruits->fruits[i-1] = fruits->fruits[i];
   }
@@ -79,9 +78,10 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
   static int chance[EFFECTS] = {100, 25};
   static int max_chance = 125;
 
-  int i;
-  int random = rand() % max_chance;
-  while(random > chance[i]) {
+  int i = 0;
+  int sum = 0;
+  int random = rand() % max_chance + 1;
+  while(random > (sum += chance[i]) && i + 1 < EFFECTS) {
     i++;
   };
   fruit->win = newwin(1, 1, posy, posx);
