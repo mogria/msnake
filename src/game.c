@@ -2,7 +2,7 @@
 #include "fruits.h"
 #include "snake.h"
 #include "main.h"
-#include <time.h>
+#include "current_utc_time.h"
 
 void kill_game(GAME *game) {
   kill_fruits(&game->fruits);
@@ -64,7 +64,8 @@ void run() {
   
   // get the time when the game started
   time(&game.started);
-  clock_gettime(CLOCK_REALTIME, &last_time);
+  // get the current time
+  current_utc_time(&last_time);
   while((ich = getch()) && success && ch != 'x') {
     
     // key typed?
@@ -79,7 +80,7 @@ void run() {
       ch = ich;
     }
     // check if we have an overrun
-    clock_gettime(CLOCK_REALTIME, &current_time);
+    current_utc_time(&current_time);
     res = timeval_diff(&last_time, &current_time);
     if(res > interval) {
       // new direction? 
