@@ -36,7 +36,6 @@ The following command is to create the debian package:
 
     $ ./makedeb.sh
 
-And with the following command you can install it:
+And with the following command you can install it (You need root-privileges):
 
-    $ sudo dpkg -i msnake.deb
-
+    # dpkg -i msnake.deb
