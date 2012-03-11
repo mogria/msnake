@@ -70,13 +70,14 @@ void grow_fruit(GAME* game) {
 
 
 void get_fruit(FRUIT *fruit, int posy, int posx) {
-  static char chars[EFFECTS] = {'x', '@'};
+  static char chars[EFFECTS] = {'x', '@', '%'};
   static void (*effects[EFFECTS])(GAME *) = {
     normal_effect,
-    double_grow
+    double_grow,
+    mega_food
   };
-  static int chance[EFFECTS] = {100, 25};
-  static int max_chance = 125;
+  static int chance[EFFECTS] = {100, 25, 5};
+  static int max_chance = 130;
 
   int i = 0;
   int sum = 0;
