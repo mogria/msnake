@@ -6,7 +6,7 @@ void kill_fruits(FRUITS* fruits) {
   int i;
 
   for(i = 0; i < fruits->length; i++) {
-    delwin(fruits->fruits[i]->win);
+    delwin(fruits->fruits[i].win);
   }
   fruits->length = 0;
   free(fruits->fruits);
@@ -22,7 +22,7 @@ void kill_fruit(FRUITS *fruits, int posy, int posx) {
 void kill_fruit_by_ptr(FRUITS *fruits, FRUIT *fruit) {
   int i;
   for(i = 0; i < fruits->length; i++) {
-    if(fruits->fruits[i] == fruit) {
+    if(&fruits->fruits[i] == fruit) {
       kill_fruit_at_pos(fruits, i);
       break;
     }
@@ -30,7 +30,7 @@ void kill_fruit_by_ptr(FRUITS *fruits, FRUIT *fruit) {
 }
 
 void kill_fruit_at_pos(FRUITS *fruits, int i) {
-  free(fruits->fruits[i]);
+  free(&fruits->fruits[i]);
   for(i++; i < fruits->length; i++) {
     fruits->fruits[i-1] = fruits->fruits[i];
   }
@@ -42,7 +42,7 @@ FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx) {
   int y,x;
 
   for(i = 0; i < fruits->length; i++) {
-    getbegyx(fruits->fruits[i]->win, y, x);
+    getbegyx(fruits->fruits[i].win, y, x);
     if(posy == y && posx == x) {
       return &fruits->fruits[i];
     }
@@ -66,7 +66,7 @@ int grow_fruit(GAME* game) {
     game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * ++game->fruits.length);
   }
   
-  get_fruit(game->fruits.fruits[game->fruits.length - 1], randy, randx);
+  get_fruit(&game->fruits.fruits[game->fruits.length - 1], randy, randx);
 }
 
 
@@ -82,7 +82,7 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
   int i;
   int random = rand() % max_chance;
   while(random > chance[i]) {
-    i++
+    i++;
   };
   fruit->win = newwin(1, 1, posy, posx);
   fruit->effect = effects[i];
@@ -94,7 +94,7 @@ void redraw_fruits(FRUITS *fruits) {
   int i;
 
   for(i = 0; i < fruits->length; i++) {
-    redrawwin(fruits->fruits[i]->win);
-    wrefresh(fruits->fruits[i]->win);
+    redrawwin(fruits->fruits[i].win);
+    wrefresh(fruits->fruits[i].win);
   }
 }

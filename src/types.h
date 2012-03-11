@@ -6,6 +6,7 @@
 #include <curses.h>
 #include <stdlib.h>
 
+
 // represents a direction on a 2d map
 typedef enum {
   DIR_UP = '^',
@@ -15,9 +16,12 @@ typedef enum {
 } direction;
 
 // represents a single fruit
+
+struct game;
+
 typedef struct fruit {
   WINDOW *win;
-  void (*effect)(GAME *);
+  void (*effect)(struct game*);
 } FRUIT;
 
 // represents a collection of fruit, which can be eaten by the snake
