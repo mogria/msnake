@@ -24,9 +24,12 @@ int main() {
     } else if(action == 2) {
       // display a dialog which explains the controls of the game
       display_controls();
+    } else if(action == 3) {
+      // display a dialog which explains the elements of the game
+      display_help();
     }
     // leave if the menu entry "exit" is chosen
-  } while(action != 3);
+  } while(action != 4);
 
   // end the curses mode
   endwin();
@@ -35,8 +38,6 @@ int main() {
   glog(NULL);
   return EXIT_SUCCESS;
 }
-
-#define MENU_LINES (3 + 2)
 
 WINDOW *create_dialog() {
   WINDOW *win;
@@ -57,6 +58,8 @@ void wait_return(WINDOW *win) {
   }
 }
 
+#define MENU_LINES (4 + 2)
+
 int display_menu() {
   WINDOW *win;
   int i, ch;
@@ -66,6 +69,7 @@ int display_menu() {
   "--------------------------------------",
   "%i) Start the game",
   "%i) Controls",
+  "%i) Help",
   "%i) Exit"
   };
   
@@ -120,6 +124,41 @@ void display_controls() {
 
   for(i = 1; i <= CONTROLS_LINES; i++) {
     mvwprintw(win, i, 1, "%s", controls[i - 1]);
+  }
+  //display the dialog
+  wrefresh(win);
+
+  // wait until enter is pressed
+  wait_return(win);
+  delwin(win);
+}
+
+#define HELP_LINES (11 + 2)
+void display_help() {
+  WINDOW *win;
+  int i;
+  // the contents of the dialog
+  char help[HELP_LINES][41] = {
+  "---------------- HELP ----------------",
+  "--------------------------------------",
+  " < ^ > v  the snake head",
+  " O        the snake body",
+  "          you shouldn't hit yourself  ",
+  " #        the wall, don't hit it!",
+  " x        simple food, +1 highscore",
+  "          +1 length, +1 new food",
+  " @        double food, +1 highscore",
+  "          +1 length, +2 new food",
+  " %        mega food, +10 highscore",
+  "          +5 length, +1 new food",
+  "press enter to go back to the menu .."
+  };
+
+  // get a new dialog window
+  win = create_dialog();
+
+  for(i = 1; i <= HELP_LINES; i++) {
+    mvwprintw(win, i, 1, "%s", help[i - 1]);
   }
   //display the dialog
   wrefresh(win);
