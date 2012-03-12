@@ -85,10 +85,13 @@ int move_snake(GAME *game) {
       grow_snake(&game->snake, cury, curx);
       game->snake.grow--;
     } else {
-      WINDOW *cur = newwin(1, 1, cury, curx);
-      wprintw(cur, "%c", ' ');
-      wrefresh(cur);
-      delwin(cur);
+      getbegyx(game->snake.parts[0], tmpy, tmpx);
+      if(!(tmpy == cury && tmpx == curx)) {
+        WINDOW *cur = newwin(1, 1, cury, curx);
+        wprintw(cur, "%c", ' ');
+        wrefresh(cur);
+        delwin(cur);
+      }
     }
   }
   return success;
