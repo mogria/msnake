@@ -43,3 +43,13 @@ The following command is to create the debian package:
 And with the following command you can install it (You need root-privileges):
 
     # dpkg -i msnake.deb
+
+# TODO
+
+This list contains stuff we want to implement/change in the game.
+
+* Better dialog system (a function to create common dialogs)
+* A Highscore System
+* A Settings Menu
+* More food with diffrent effects?
+* Better documentation of the source code
