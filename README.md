@@ -19,7 +19,8 @@ Simply enter the following command to compile the game:
     $ cmake .
     $ make
 
-You'll need to have `cmake` installed. You'll also need the packages `build-essential`, `libncurses5`, `libncurses5-dev` if you are on a debian-based distro. If you are not a debian-based distro look for similar packages in the repositories if you can't compile it. Execute the following command (with root privileges) to in install the packages on debian-based systems:
+You'll need to have `cmake` installed. You'll also need the packages `build-essential`, `libncurses5`, `libncurses5-dev` if you are on a debian-based distro.
+If you are _not_ a debian-based distro and you can't compile the game, look for similar packages in the repositories of your distribution. Execute the following command (with root privileges) to in install the packages on debian-based systems:
 
     # apt-get install cmake build-essential libncurses5 libncurses5-dev
 
