@@ -1,5 +1,6 @@
 #include "fruits.h"
 #include "effects.h"
+#include "events.h"
 #include "snake.h"
 
 void kill_fruits(FRUITS* fruits) {
@@ -55,9 +56,9 @@ void grow_fruit(GAME* game) {
   y--;
   x--;
   do {
-    randy = (rand() % y) + 1;
-    randx = (rand() % x) + 1;
-  } while (snake_part_is_on(&game->snake, randy, randx) != NULL && fruit_is_on(&game->fruits, randy, randx) != NULL);
+    randy = rand() % (y + 1);
+    randx = rand() % (x + 1);
+  } while (snake_part_is_on(&game->snake, randy, randx) != NULL || fruit_is_on(&game->fruits, randy, randx) != NULL || check_extended_border_collision(game, randy, randx));
 
   if(game->fruits.length == 0) {
     game->fruits.fruits = malloc(sizeof(FRUIT) * ++game->fruits.length);
