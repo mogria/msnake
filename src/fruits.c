@@ -47,7 +47,7 @@ void kill_fruit_at_pos(FRUITS *fruits, int i) {
   }
 
   // realloc lessmemory
-  ruits->fruits = realloc(fruits->fruits, --fruits->length * sizeof(FRUIT));
+  fruits->fruits = realloc(fruits->fruits, --fruits->length * sizeof(FRUIT));
 }
 
 
