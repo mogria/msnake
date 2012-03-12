@@ -1,5 +1,6 @@
 #include "glog.h"
 
+// a simple log function, works similar to printf
 void glog(const char *format, ... ) {
   va_list args;
   static FILE *logfile = NULL;
@@ -8,6 +9,7 @@ void glog(const char *format, ... ) {
   int length;
 
   if(!(format == NULL && logfile == NULL)) {
+    // open the logfile if not already opened
     if(logfile == NULL) {
       logfile = fopen(LOG_FILE, "w");
       if(logfile == NULL) {
@@ -29,6 +31,7 @@ void glog(const char *format, ... ) {
       free(fformat);
       va_end(args);
     } else {
+      // close the logfile
       fclose(logfile);
     }
   }
