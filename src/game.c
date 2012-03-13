@@ -3,6 +3,7 @@
 #include "fruits.h"
 #include "snake.h"
 #include "main.h"
+#include "dialog.h"
 #include "current_utc_time.h"
 
 // end the game, free the resources
