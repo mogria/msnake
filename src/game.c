@@ -132,42 +132,6 @@ void run() {
   kill_game(&game);
 }
 
-#define PAUSE_LINES (2 + 2)
-
-int pause_dialog() {
-  WINDOW *win;
-  int i, ch;
-  // the contents of the dialog
-  char dialog[PAUSE_LINES][41] = {
-  "--------------- PAUSE ----------------",
-  "--------------------------------------",
-  "%i) Resume",
-  "%i) Exit"
-  };
-  
-  // get a new dialog window
-  win = create_dialog();
-
-  // insert stuff into the dialog
-  for(i = 1; i <= PAUSE_LINES; i++) {
-    mvwprintw(win, i, 1, dialog[i - 1], i - 2);
-  }
-  // display the dialog
-  wrefresh(win);
-
-  // wait for some input
-  while((ch = wgetch(win))) {
-    if(ch == ERR) continue;
-    if(ch == '\n') ch = '0';
-    if(ch >= '0' && ch <= '9') {
-      // return the number pressed
-      return ch - '0';
-    }
-  }
-  return 0;
-
-}
-
 // redraw the whole screen
 void redraw_game(GAME *game) {
   // redraw the main window (containg the border and stuff)
