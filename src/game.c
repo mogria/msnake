@@ -4,6 +4,7 @@
 #include "snake.h"
 #include "main.h"
 #include "dialog.h"
+#include "highscore.h"
 #include "current_utc_time.h"
 
 // end the game, free the resources
@@ -128,6 +129,8 @@ void run() {
 
   // display the highscore dialog
   display_highscore(&game);
+
+  add_highscore("void", game.highscore, game.ended - game.started);
   // free all the resources reserved in the game struct
   kill_game(&game);
 }

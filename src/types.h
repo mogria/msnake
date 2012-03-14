@@ -47,6 +47,16 @@ typedef struct game {
   int highscore;
 } GAME;
 
+
+#define HIGHSCORE_NAME_LENGTH 15
+
+typedef struct highscore {
+  char name[HIGHSCORE_NAME_LENGTH];
+  int points;
+  long time_sec;
+  int highscore;
+} HIGHSCORE;
+
 #include "glog.h"
 
 #endif /* _TYPES_H */

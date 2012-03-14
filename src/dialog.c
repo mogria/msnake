@@ -1,4 +1,5 @@
 #include "types.h"
+#include "highscore.h"
 #include "dialog.h"
 
 // create a basic dialog with title
@@ -86,11 +87,12 @@ int display_menu() {
   "%i) Start the game",
   "%i) Controls",
   "%i) Help",
+  "%i) Highscores",
   "%i) Exit"
   };
   
   // create a numbered dialog
-  return create_numbered_dialog("MENU", (char *)menu, 4);
+  return create_numbered_dialog("MENU", (char *)menu, 5);
 }
 
 // displays the controls dialog
@@ -166,4 +168,18 @@ int pause_dialog() {
   return create_numbered_dialog("PAUSE", (char *)dialog, 2);
 }
 
-
+void show_highscores() {
+  int num, i;
+  HIGHSCORE *highscore = read_highscore(&num);
+  char *highscore_table = calloc(num * CONTENT_WIDTH, sizeof(char));
+  for(i = 0; i < num; i++) {
+    snprintf(highscore_table + i * CONTENT_WIDTH * sizeof(char),
+      CONTENT_WIDTH, "%2i. %15s %5i %5li %10i",
+      i + 1,
+      highscore[i].name,
+      highscore[i].points,
+      highscore[i].time_sec,
+      highscore[i].highscore);
+  }
+  create_enter_dialog("HIGHSCORES", highscore_table, num);
+}

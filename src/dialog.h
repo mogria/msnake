@@ -14,6 +14,7 @@ int display_menu();
 void display_controls();
 void display_help();
 void display_highscore(GAME *game);
+void show_highscores();
 int pause_dialog();
 
 #endif /* _DIALOG_H */
