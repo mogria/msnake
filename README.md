@@ -14,18 +14,30 @@ A simple snake game written in C using the ncurses library.
 
 # How to install
 
-Simply enter the following command to compile the game:
+## Cloning / Downloading
+
+If you have git installed you can simply clone the repo using the following command.
+
+    $ git clone https://github.com/mogria/msnake.git
+
+The advantage of using git is you can update the downloaded code simply by entering:
+
+    $ git pull
+
+If you don't have git installed you can download a zip-file of the repository and extract it.
+
+## Compiling
+
+Change into the Git-Repository (or the folder where you extracted the zip file) and enter the following commands to compile the game:
 
     $ cmake .
     $ make
 
-You'll need to have `cmake` installed. You'll also need the packages `build-essential`, `libncurses5`, `libncurses5-dev` if you are on a debian-based distro.
-If you are _not_ a debian-based distro and you can't compile the game, look for similar packages in the repositories of your distribution. Execute the following command (with root privileges) to in install the packages on debian-based systems:
-
-    # apt-get install cmake build-essential libncurses5 libncurses5-dev
-
 After you've compiled the game you can execute the file `bin/msnake` to run the game.
-If you want it to install this game to your system simply execute:
+
+## Installing the Game to your System (only Linux & Mac)
+
+To install this game to your system simply execute:
 
     # make install
 
@@ -33,6 +45,25 @@ Note: You need root-privileges to install this to your system
 
 The install script simply moves the file `bin/msnake` to `/usr/bin/msnake`.
 So, if your `PATH` is set correctly you can start the game using the command `msnake`
+
+
+## Linux
+
+To compile the game, you'll need to have `cmake` installed. You'll also need the packages `build-essential`, `libncurses5`, `libncurses5-dev` if you are on a debian-based distro.
+If you are _not_ a debian-based distro and you can't compile the game, look for similar packages in the repositories of your distribution. Execute the following command (with root privileges) to in install the packages on debian-based systems:
+
+    # apt-get install cmake build-essential libncurses5 libncurses5-dev
+
+
+## Mac OS X
+
+To compile the game, you'll need to have cMake.
+To get cMake, go to [cMake.org](http;//www.cmake.org) and download and install the latest version. If the command `cmake` is a available in your Terminal you've installed cMake correctly.
+
+## Windows
+
+It was possible to compile the game on Windows with some minor changes to the source Code. You can download the compiled win32 executeable in the download section. The REpository will be updated soon to make it easier to compile the game on windows. Some instructions how to compile it with MinGW will also be added.
+
 
 # How to create debian package of msnake
 
@@ -49,7 +80,6 @@ And with the following command you can install it (You need root-privileges):
 
 This list contains stuff we want to implement/change in the game.
 
-* Better dialog system (a function to create common dialogs)
 * A Highscore System
 * A Settings Menu
 * More food with diffrent effects?
