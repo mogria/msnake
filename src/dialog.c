@@ -1,25 +1,25 @@
 #include "types.h"
 #include "dialog.h"
 
+// create a basic dialog with title
 WINDOW *create_dialog_window(const char *title) {
   WINDOW *win;
-  int width = 40, height = 20;
   int sx, sy, i, u, startpos;
   // create a little window in the center of the screen with a border and a size of 40x20
   getmaxyx(stdscr, sy, sx);
-  win = newwin(height, width, sy / 2 - height / 2, sx / 2 - width / 2);
+  win = newwin(DIALOG_HEIGHT, DIALOG_WIDTH, sy / 2 - DIALOG_HEIGHT / 2, sx / 2 - DIALOG_WIDTH / 2);
   // make the border
   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 
   // fill the first two lines with "-" and "+" on the edge
   for(u = 1; u <= 2; u++) {
-    for(i = 0; i < width; i++) {
-      mvwprintw(win, u, i, "%c", i == 0 || i == width - 1 ? '+' : '-');
+    for(i = 0; i < DIALOG_WIDTH; i++) {
+      mvwprintw(win, u, i, "%c", i == 0 || i == DIALOG_WIDTH - 1 ? '+' : '-');
     }
   }
 
   // print the title in the middle of the dialog
-  startpos = width / 2 - strlen(title) / 2;
+  startpos = DIALOG_WIDTH / 2 - strlen(title) / 2;
   mvwprintw(win, 1, startpos - 1, " ");
   mvwprintw(win, 1, startpos, "%s", title);
   mvwprintw(win, 1, startpos + strlen(title), " ");
@@ -35,38 +35,31 @@ void wait_return(WINDOW *win) {
   }
 }
 
-int create_enter_dialog(const char *title, const char *contents[], int lines) {
+// creates a simple dialog with content, you can press 'enter' to close the dialog
+int create_enter_dialog(const char *title, const char *contents, int lines) {
   WINDOW *win = create_dialog_window(title);
   int i;
   // insert stuff into the dialog
   for(i = 0; i < lines; i++) {
-    mvwprintw(win, i + 3, 1, "%s", contents[i]);
+    mvwprintw(win, i + 3, 1, "%s", &contents[i * CONTENT_WIDTH]);
   }
+  // display the dialog
   wrefresh(win);
+  // wait for 'enter'
   wait_return(win);
+  // free the allocated memory of the window
   delwin(win);
   return 0;
 }
 
-#define MENU_LINES 4
 
-int display_menu() {
-  WINDOW *win;
+// creates a dialog with menu entries, you can press numbers to select a menu entry and close the dialog
+int create_numbered_dialog(const char *title, const char *contents, int lines) {
+  WINDOW *win = create_dialog_window(title);
   int i, ch;
-  // the contents of the dialog
-  char menu[MENU_LINES][41] = {
-  "%i) Start the game",
-  "%i) Controls",
-  "%i) Help",
-  "%i) Exit"
-  };
-  
-  // get a new dialog window
-  win = create_dialog_window("MENU");
-
-  // insert stuff into the dialog
-  for(i = 1; i <= MENU_LINES; i++) {
-    mvwprintw(win, i + 2, 1, menu[i - 1], i);
+  // insert menu entries into
+  for(i = 0; i < lines; i++) {
+    mvwprintw(win, i + 3, 1, &contents[i * CONTENT_WIDTH], i + 1);
   }
   // display the dialog
   wrefresh(win);
@@ -74,17 +67,36 @@ int display_menu() {
   // wait for some input
   while((ch = wgetch(win))) {
     if(ch == ERR) continue;
+    // select the first menu entry if enter is pressed
+    if(ch == '\n') ch = '1';
+    // a number pressed?
     if(ch >= '0' && ch <= '9') {
       // return the number pressed
+      delwin(win);
       return ch - '0';
     }
   }
   return 0;
 }
 
+// displays the main menu
+int display_menu() {
+  // the contents of the dialog
+  char menu[][CONTENT_WIDTH] = {
+  "%i) Start the game",
+  "%i) Controls",
+  "%i) Help",
+  "%i) Exit"
+  };
+  
+  // create a numbered dialog
+  return create_numbered_dialog("MENU", (char *)menu, 4);
+}
+
+// displays the controls dialog
 void display_controls() {
   // the dialog contents
-  char controls[][41] = {
+  char controls[][CONTENT_WIDTH] = {
   "w - move up",
   "a - move left",
   "s - move down",
@@ -100,15 +112,13 @@ void display_controls() {
   };
 
   // create the dialog
-  create_enter_dialog("CONTROLS", (const char **)controls, 11);
+  create_enter_dialog("CONTROLS", (const char *)controls, 11);
 }
 
-#define HELP_LINES 11
+// displays the help menu
 void display_help() {
-  WINDOW *win;
-  int i;
   // the contents of the dialog
-  char help[HELP_LINES][41] = {
+  char help[][CONTENT_WIDTH] = {
   " < ^ > v  the snake head",
   " O        the snake body",
   "          you shouldn't hit yourself  ",
@@ -122,20 +132,11 @@ void display_help() {
   "press enter to go back to the menu .."
   };
 
-  // get a new dialog window
-  win = create_dialog_window("HELP");
-
-  for(i = 1; i <= HELP_LINES; i++) {
-    mvwprintw(win, i + 2, 1, "%s", help[i - 1]);
-  }
-  //display the dialog
-  wrefresh(win);
-
-  // wait until enter is pressed
-  wait_return(win);
-  delwin(win);
+  // create the dialog
+  create_enter_dialog("HELP", (const char *)help, 11);
 }
 
+// displays the highscore dialog
 void display_highscore(GAME *game) {
   WINDOW *win;
   // create a dialog
@@ -153,38 +154,16 @@ void display_highscore(GAME *game) {
 }
 
 
-#define PAUSE_LINES 2
-
+// displays the pause dialog
 int pause_dialog() {
-  WINDOW *win;
-  int i, ch;
   // the contents of the dialog
-  char dialog[PAUSE_LINES][41] = {
+  char dialog[][CONTENT_WIDTH] = {
   "%i) Resume",
   "%i) Exit"
   };
-  
-  // get a new dialog window
-  win = create_dialog_window("PAUSE");
 
-  // insert stuff into the dialog
-  for(i = 1; i <= PAUSE_LINES; i++) {
-    mvwprintw(win, i + 2, 1, dialog[i - 1], i - 2);
-  }
-  // display the dialog
-  wrefresh(win);
-
-  // wait for some input
-  while((ch = wgetch(win))) {
-    if(ch == ERR) continue;
-    if(ch == '\n') ch = '0';
-    if(ch >= '0' && ch <= '9') {
-      // return the number pressed
-      return ch - '0';
-    }
-  }
-  return 0;
-
+  // display the numbered dialog
+  return create_numbered_dialog("PAUSE", (char *)dialog, 2);
 }
 
 
