@@ -1,5 +1,6 @@
 #include "main.h"
 #include "dialog.h"
+#include "highscore.h"
 #include "game.h"
 
 int main() {
@@ -39,5 +40,6 @@ int main() {
   
   // close the logfile
   glog(NULL);
+  read_highscore(NULL);
   return EXIT_SUCCESS;
 }
