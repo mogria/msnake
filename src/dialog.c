@@ -171,15 +171,17 @@ int pause_dialog() {
 void show_highscores() {
   int num, i;
   HIGHSCORE *highscore = read_highscore(&num);
-  char *highscore_table = calloc(num * CONTENT_WIDTH, sizeof(char));
+  char *highscore_table = calloc((num + 2) * CONTENT_WIDTH, sizeof(char));
+  snprintf(highscore_table, CONTENT_WIDTH, "POS            NAME  PTS   SEC  SCORE");
+  snprintf(highscore_table + CONTENT_WIDTH * sizeof(char), CONTENT_WIDTH, "-------------------------------------");
   for(i = 0; i < num; i++) {
-    snprintf(highscore_table + i * CONTENT_WIDTH * sizeof(char),
-      CONTENT_WIDTH, "%2i. %15s %5i %5li %10i",
+    snprintf(highscore_table + (i + 2) * CONTENT_WIDTH * sizeof(char),
+      CONTENT_WIDTH, "%2i. %15s %4i  %4li  %5i",
       i + 1,
       highscore[i].name,
       highscore[i].points,
       highscore[i].time_sec,
       highscore[i].highscore);
   }
-  create_enter_dialog("HIGHSCORES", highscore_table, num);
+  create_enter_dialog("HIGHSCORES", highscore_table, num + 2);
 }

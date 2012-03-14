@@ -10,6 +10,7 @@ int calculate_score(int points, long time_sec) {
 HIGHSCORE *read_highscore(int *num) {
   static HIGHSCORE *ptr = NULL;
   FILE *hs_file;
+  int x, swapped;
   HIGHSCORE current;
 
   if(num == NULL) {
@@ -33,6 +34,18 @@ HIGHSCORE *read_highscore(int *num) {
     ptr[*num - 1] = current;
   }
 
+  do {
+    swapped = 0;
+    for(x = 0; x < *num - 1; x++) {
+      if(ptr[x].highscore < ptr[x + 1].highscore) {
+        current = ptr[x];
+        ptr[x] = ptr[x + 1];
+        ptr[x + 1] = current;
+        swapped = 1;
+      }
+    }
+  } while (swapped);
+
   return ptr;
 }
 
@@ -43,7 +56,7 @@ int add_highscore(char *name, int points, int time_sec) {
   highscore.points = points;
   highscore.time_sec = time_sec;
   highscore.highscore = calculate_score(points, time_sec);
-  name[HIGHSCORE_NAME_LENGTH - 1] = '\0';
+  highscore.name[HIGHSCORE_NAME_LENGTH - 1] = '\0';
 
   if((hs_file = fopen(HIGHSCORE_FILE, "a")) == NULL) {
     return 1;

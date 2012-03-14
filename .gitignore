@@ -11,3 +11,4 @@ Makefile
 install_manifest.txt
 usr/*
 *.deb
+msnake_scores.dat
