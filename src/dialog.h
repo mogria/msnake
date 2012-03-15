@@ -16,5 +16,6 @@ void display_help();
 void display_highscore(GAME *game);
 void show_highscores();
 int pause_dialog();
+void enter_string(char *buf, int length);
 
 #endif /* _DIALOG_H */

@@ -41,6 +41,7 @@ void run() {
   long long default_interval = 20000000;
   long long interval = default_interval;
   long long res;
+  char playername[HIGHSCORE_NAME_LENGTH] = {};
 
   // create the game struct
   GAME game = {};
@@ -130,7 +131,9 @@ void run() {
   // display the highscore dialog
   display_highscore(&game);
 
-  add_highscore("void", game.highscore, game.ended - game.started);
+  enter_string(playername, HIGHSCORE_NAME_LENGTH);
+
+  add_highscore(playername, game.highscore, game.ended - game.started);
   // free all the resources reserved in the game struct
   kill_game(&game);
 }

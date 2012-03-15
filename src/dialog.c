@@ -171,11 +171,14 @@ int pause_dialog() {
 void show_highscores() {
   int num, i;
   HIGHSCORE *highscore = read_highscore(&num);
+  if(num > 14) {
+    num = 14;
+  }
   char *highscore_table = calloc((num + 2) * CONTENT_WIDTH, sizeof(char));
   snprintf(highscore_table, CONTENT_WIDTH, "POS            NAME  PTS   SEC  SCORE");
-  snprintf(highscore_table + CONTENT_WIDTH * sizeof(char), CONTENT_WIDTH, "-------------------------------------");
+  snprintf(highscore_table + CONTENT_WIDTH, CONTENT_WIDTH, "-------------------------------------");
   for(i = 0; i < num; i++) {
-    snprintf(highscore_table + (i + 2) * CONTENT_WIDTH * sizeof(char),
+    snprintf(highscore_table + (i + 2) * CONTENT_WIDTH,
       CONTENT_WIDTH, "%2i. %15s %4i  %4li  %5i",
       i + 1,
       highscore[i].name,
@@ -184,4 +187,12 @@ void show_highscores() {
       highscore[i].highscore);
   }
   create_enter_dialog("HIGHSCORES", highscore_table, num + 2);
+}
+
+void enter_string(char *buf, int length) {
+  WINDOW *win = create_dialog_window("enter your name:");
+  echo();
+  mvwgetnstr(win, 3, 1, buf, length);
+  noecho();
+  delwin(win);
 }
