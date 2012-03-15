@@ -168,16 +168,24 @@ int pause_dialog() {
   return create_numbered_dialog("PAUSE", (char *)dialog, 2);
 }
 
+// display a table containing the highscores of the players
 void show_highscores() {
   int num, i;
+  // read all the submitted highscores from a file
   HIGHSCORE *highscore = read_highscore(&num);
-  if(num > 14) {
-    num = 14;
+
+  // limit the highscore display to (at the moment 14) entries
+  if(num > DIALOG_HEIGHT - 6) {
+    num = DIALOG_HEIGHT - 6;
   }
+  // create a char array for the content of the highscore table
   char *highscore_table = calloc((num + 2) * CONTENT_WIDTH, sizeof(char));
+  // insert the table heading
   snprintf(highscore_table, CONTENT_WIDTH, "POS            NAME  PTS   SEC  SCORE");
   snprintf(highscore_table + CONTENT_WIDTH, CONTENT_WIDTH, "-------------------------------------");
+  // insert the highscores
   for(i = 0; i < num; i++) {
+    // insert a highscore record
     snprintf(highscore_table + (i + 2) * CONTENT_WIDTH,
       CONTENT_WIDTH, "%2i. %15s %4i  %4li  %5i",
       i + 1,
@@ -186,13 +194,19 @@ void show_highscores() {
       highscore[i].time_sec,
       highscore[i].highscore);
   }
+  // create a dialog and display the data
   create_enter_dialog("HIGHSCORES", highscore_table, num + 2);
 }
 
+// create a dialog and let the player input his name
 void enter_string(char *buf, int length) {
   WINDOW *win = create_dialog_window("enter your name:");
+  // turn on the echo on the screen
   echo();
+  // get the name
   mvwgetnstr(win, 3, 1, buf, length);
+  // turn the echo off again
   noecho();
+  // delete the dialog
   delwin(win);
 }

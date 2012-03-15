@@ -40,6 +40,7 @@ int main() {
   
   // close the logfile
   glog(NULL);
+  // free the allocated memory for the highscore
   read_highscore(NULL);
   return EXIT_SUCCESS;
 }

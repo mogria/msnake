@@ -131,9 +131,13 @@ void run() {
   // display the highscore dialog
   display_highscore(&game);
 
+  // let the player input his name
   enter_string(playername, HIGHSCORE_NAME_LENGTH);
 
-  add_highscore(playername, game.highscore, game.ended - game.started);
+  // has a name been entered? if not don't create a menu entry
+  if(playername[0]) {
+    add_highscore(playername, game.highscore, game.ended - game.started);
+  }
   // free all the resources reserved in the game struct
   kill_game(&game);
 }
