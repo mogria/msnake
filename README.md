@@ -76,11 +76,24 @@ And with the following command you can install it (You need root-privileges):
 
     # dpkg -i msnake.deb
 
+# Contributing
+
+To contribute to this awesome project, you can visit the repo on [GitHub](http://github.com/mogria/msnake) and fork it and create your own branch. You can pick a task from the TODO list below (or simply do something else). If you finished your work, create a pull request on GitHub and we'll probably merge your stuff to our repository.
+
 # TODO
 
-This list contains stuff we want to implement/change in the game.
+This list contains stuff we want to implement or change.
 
-* A Highscore System
+* Create a better dialog for entering the name
+* re-order the menu entries in the main menu
+* create a simple display in the corner which displays the current score while playing
+* don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
+* add a scroll function to the highscore? or delete low entries?
+* add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
+* don't add the time the game was paused to the gametime
 * A Settings Menu
 * More food with diffrent effects?
+  * a fruit which changes the direction of the snake? (or a key?)
+  * more eat-range for a short time?
 * Better documentation of the source code
+* Optimize Code
