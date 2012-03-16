@@ -44,6 +44,7 @@ typedef struct game {
   SNAKE snake;
   time_t started;
   time_t ended;
+  time_t paused;
   int highscore;
 } GAME;
 

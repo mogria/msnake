@@ -146,7 +146,7 @@ void display_highscore(GAME *game) {
 
   // print stuff into the dialog
   mvwprintw(win, 3, 1, "highscore : %i", game->highscore);
-  mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started));
+  mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started) - game->paused);
   mvwprintw(win, 6, 1, "press enter key to continue ");
   wrefresh(win);
 

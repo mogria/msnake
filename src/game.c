@@ -46,6 +46,10 @@ void run() {
   // create the game struct
   GAME game = {};
 
+  // helper variable to keep track of how long we've paused
+  time_t pause_start;
+
+
   // get the dimensions of the terminal
   getmaxyx(stdscr, rows, columns);
 
@@ -112,6 +116,9 @@ void run() {
 
     // 'p' pressed
     if(ich == 'p') {
+      // get the time
+      time(&pause_start);
+
       // show the pause dialog
       switch(pause_dialog()) {
         case 2:
@@ -119,6 +126,7 @@ void run() {
           success = 0;
         default:
           // redraw the screen on resume
+          game.paused += time(NULL) - pause_start;
           redraw_game(&game);
           break;
       }
@@ -136,7 +144,7 @@ void run() {
 
   // has a name been entered? if not don't create a menu entry
   if(playername[0]) {
-    add_highscore(playername, game.highscore, game.ended - game.started);
+    add_highscore(playername, game.highscore, game.ended - game.started - game.paused);
   }
   // free all the resources reserved in the game struct
   kill_game(&game);
