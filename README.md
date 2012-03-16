@@ -85,7 +85,6 @@ To contribute to this awesome project, you can visit the repo on [GitHub](http:/
 This list contains stuff we want to implement or change.
 
 * Create a better dialog for entering the name
-* re-order the menu entries in the main menu
 * create a simple display in the corner which displays the current score while playing
 * don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
 * add a scroll function to the highscore? or delete low entries?

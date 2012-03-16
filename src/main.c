@@ -24,13 +24,14 @@ int main() {
       // run the game
       run();
     } else if(action == 2) {
+      // display the highscores
+      show_highscores();
+    } else if(action == 3) {
       // display a dialog which explains the controls of the game
       display_controls();
-    } else if(action == 3) {
+    } else if(action == 4) {
       // display a dialog which explains the elements of the game
       display_help();
-    } else if(action == 4) {
-      show_highscores();
     }
     // leave if the menu entry "exit" is chosen
   } while(action != 5);

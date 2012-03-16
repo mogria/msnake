@@ -85,9 +85,9 @@ int display_menu() {
   // the contents of the dialog
   char menu[][CONTENT_WIDTH] = {
   "%i) Start the game",
+  "%i) Highscores",
   "%i) Controls",
   "%i) Help",
-  "%i) Highscores",
   "%i) Exit"
   };
   
