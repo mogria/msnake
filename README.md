@@ -91,8 +91,10 @@ This list contains stuff we want to implement or change.
 * add a scroll function to the highscore? or delete low entries?
 * add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
 * A Settings Menu
+* display also the score in the GAME OVER dialog
 * More food with diffrent effects?
   * a fruit which changes the direction of the snake? (or a key?)
   * more eat-range for a short time?
 * Better documentation of the source code
 * Optimize Code
+  * The snake moves are inefficient, every part is moved, we should better move/copy the last part to the new position (this makes the game very slow if you have a long snake)
