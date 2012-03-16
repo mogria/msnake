@@ -5,6 +5,7 @@
 #include "main.h"
 #include "dialog.h"
 #include "highscore.h"
+#include "status-display.h"
 #include "current_utc_time.h"
 
 // end the game, free the resources
@@ -111,6 +112,7 @@ void run() {
 
       // refresh the screen
       refresh();
+      status_display(&game);
       last_time = current_time;
     }
 
