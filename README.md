@@ -85,12 +85,10 @@ To contribute to this awesome project, you can visit the repo on [GitHub](http:/
 This list contains stuff we want to implement or change.
 
 * make the current_utc_time function compatible to windows
-* create a simple display in the corner which displays the current score while playing
 * don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
 * add a scroll function to the highscore? or delete low entries?
 * add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
 * A Settings Menu
-* display also the score in the GAME OVER dialog
 * More food with diffrent effects?
   * a fruit which changes the direction of the snake? (or a key?)
   * more eat-range for a short time?
