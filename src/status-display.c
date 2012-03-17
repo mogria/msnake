@@ -5,7 +5,7 @@ void status_display(GAME *game) {
   int sx, sy;
   getmaxyx(stdscr, sy, sx);
   const int width = 25;
-  WINDOW *win = newwin(1, width, 0, sx - width);
+  WINDOW *win = newwin(1, width, sy * 0, sx - width);
   wprintw(win,"%03iL-%05iP-%04is-%04iSCR",
       game->snake.length,
       game->highscore,

@@ -138,16 +138,14 @@ void run() {
   // get the time when the game has ended
   time(&game.ended);
 
-  // display the highscore dialog
-  display_highscore(&game);
+  // display the highscore dialog & let the player enter his name
+  display_highscore(&game, playername, HIGHSCORE_NAME_LENGTH);
 
-  // let the player input his name
-  enter_string(playername, HIGHSCORE_NAME_LENGTH);
-
-  // has a name been entered? if not don't create a menu entry
+  // has a name been entered? if not don't create a highscore entry
   if(playername[0]) {
     add_highscore(playername, game.highscore, game.ended - game.started - game.paused);
   }
+
   // free all the resources reserved in the game struct
   kill_game(&game);
 }

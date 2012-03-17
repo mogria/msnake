@@ -27,6 +27,7 @@ WINDOW *create_dialog_window(const char *title) {
   return win;
 }
 
+// wait until enter is pressed
 void wait_return(WINDOW *win) {
   int ch;
   while((ch = wgetch(win))) {
@@ -138,24 +139,6 @@ void display_help() {
   create_enter_dialog("HELP", (const char *)help, 11);
 }
 
-// displays the highscore dialog
-void display_highscore(GAME *game) {
-  WINDOW *win;
-  // create a dialog
-  win = create_dialog_window("GAME OVER");
-
-  // print stuff into the dialog
-  mvwprintw(win, 3, 1, "highscore : %i", game->highscore);
-  mvwprintw(win, 4, 1, "time      : %.0lfs", difftime(game->ended, game->started) - game->paused);
-  mvwprintw(win, 6, 1, "press enter key to continue ");
-  wrefresh(win);
-
-  // wait until enter is pressed
-  wait_return(win);
-  delwin(win);
-}
-
-
 // displays the pause dialog
 int pause_dialog() {
   // the contents of the dialog
@@ -196,17 +179,47 @@ void show_highscores() {
   }
   // create a dialog and display the data
   create_enter_dialog("HIGHSCORES", highscore_table, num + 2);
+  // free the resources
+  free(highscore_table);
 }
 
-// create a dialog and let the player input his name
-void enter_string(char *buf, int length) {
-  WINDOW *win = create_dialog_window("enter your name:");
+void enter_string(char *title, char *content, int lines, int posy, int posx, char *buf, int length) {
+  WINDOW *win = create_dialog_window(title);
+  int i;
+
+  //print out the content
+  for(i = 0; i < lines; i++) {
+    mvwprintw(win, i + 3, 1, "%s", &content[i * CONTENT_WIDTH]);
+  }
+
   // turn on the echo on the screen
   echo();
   // get the name
-  mvwgetnstr(win, 3, 1, buf, length);
+  mvwgetnstr(win, posy, posx, buf, length);
   // turn the echo off again
   noecho();
   // delete the dialog
   delwin(win);
+}
+
+// displays the highscore dialog
+void display_highscore(GAME *game, char *buf, int length) {
+  int lines = 6;
+  // allocate enougth memory
+  char *content = calloc(lines * CONTENT_WIDTH, sizeof(char));
+
+  // generate the window contents
+  snprintf(content                    , CONTENT_WIDTH, "snake length : %i", game->snake.length);
+  snprintf(content + CONTENT_WIDTH    , CONTENT_WIDTH, "points       : %i", game->highscore);
+  snprintf(content + CONTENT_WIDTH * 2, CONTENT_WIDTH, "time         : %lis", game->ended - game->started - game->paused);
+  snprintf(content + CONTENT_WIDTH * 3, CONTENT_WIDTH, "highscore    : %i", calculate_score(game->highscore, game->ended - game->started - game->paused));
+  snprintf(content + CONTENT_WIDTH * 4, CONTENT_WIDTH, "----------------------------------------");
+  snprintf(content + CONTENT_WIDTH * 5, CONTENT_WIDTH, "enter your name to be added to the highscore");
+  snprintf(content + CONTENT_WIDTH * 5, CONTENT_WIDTH, "Name: ");
+
+  // show the dialog
+  enter_string("GAME OVER", content, lines, 8, 7, buf, length);
+
+  // free the memory
+  free(content);
 }

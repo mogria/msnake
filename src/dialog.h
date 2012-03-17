@@ -13,9 +13,9 @@ void wait_return(WINDOW *win);
 int display_menu();
 void display_controls();
 void display_help();
-void display_highscore(GAME *game);
+void display_highscore(GAME *game, char *buf, int length);
 void show_highscores();
 int pause_dialog();
-void enter_string(char *buf, int length);
+void enter_string(char *title, char *content, int lines, int posy, int posx, char *buf, int length);
 
 #endif /* _DIALOG_H */
