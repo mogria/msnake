@@ -84,7 +84,6 @@ To contribute to this awesome project, you can visit the repo on [GitHub](http:/
 
 This list contains stuff we want to implement or change.
 
-* make the current_utc_time function compatible to windows
 * don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
 * add a scroll function to the highscore? or delete low entries?
 * add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
