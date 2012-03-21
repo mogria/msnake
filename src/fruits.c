@@ -111,9 +111,9 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
     eat_boost
   };
   // the chance a certain fruit appears
-  static int chance[EFFECTS] = {100, 25, 5, 5};
+  static int chance[EFFECTS] = {100, 25, 5, 2};
   // the sum of all the chances
-  static int max_chance = 135;
+  static int max_chance = 132;
 
   int i = 0;
   int sum = 0;

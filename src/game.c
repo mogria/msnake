@@ -113,7 +113,7 @@ void run() {
       // has an effect on the eat_range ?
       if(game.snake.eat_range > 1) {
         // every 200th field, decrease the range
-        range_counter = (range_counter + 1) % 200;
+        range_counter = (range_counter + 1) % 150;
         // it turns to 0 after the 200th field
         if(range_counter == 0) {
           game.snake.eat_range--; // so, decrease it!

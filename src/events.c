@@ -4,11 +4,14 @@
 
 // check if the snake collides with a fruit
 int check_fruit_collision(GAME* game, int cury, int curx) {
-  // calculate the range
-  int startx = curx - (game->snake.eat_range - 1);
-  int starty = cury - (game->snake.eat_range - 1);
-  int endx = startx + game->snake.eat_range * 2 - 1;
-  int endy = starty + game->snake.eat_range * 2 - 1;
+  // calculate the range, limit the range to a maximum of 5
+  int range = (game->snake.eat_range >= 5 ? 5 : game->snake.eat_range) - 1;
+  // calculate the start position
+  int startx = curx - range;
+  int starty = cury - range;
+  // calculate the end position
+  int endx = startx + range * 2 + 1;
+  int endy = starty + range * 2 + 1;
   int x,y;
 
   int on = 0; // check if there is food in the calculated range
