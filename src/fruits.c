@@ -102,17 +102,18 @@ void grow_fruit(GAME* game) {
 // fill in data into a fruit struct
 void get_fruit(FRUIT *fruit, int posy, int posx) {
   // how the diffrent fruits are displayed
-  static char chars[EFFECTS] = {'x', '@', '%'};
+  static char chars[EFFECTS] = {'x', '@', '%', '&'};
   // the diffrent effects of the fruits
   static void (*effects[EFFECTS])(GAME *) = {
     normal_effect, // see effects.c
     double_grow,
-    mega_food
+    mega_food,
+    eat_boost
   };
   // the chance a certain fruit appears
-  static int chance[EFFECTS] = {100, 25, 5};
+  static int chance[EFFECTS] = {100, 25, 5, 5};
   // the sum of all the chances
-  static int max_chance = 130;
+  static int max_chance = 135;
 
   int i = 0;
   int sum = 0;

@@ -4,7 +4,29 @@
 
 // check if the snake collides with a fruit
 int check_fruit_collision(GAME* game, int cury, int curx) {
-  return fruit_is_on(&game->fruits, cury, curx) != NULL;
+  // calculate the range
+  int startx = curx - (game->snake.eat_range - 1);
+  int starty = cury - (game->snake.eat_range - 1);
+  int endx = startx + game->snake.eat_range * 2 - 1;
+  int endy = starty + game->snake.eat_range * 2 - 1;
+  int x,y;
+
+  int on = 0; // check if there is food in the calculated range
+  // iterate througth every field inside the range
+  for(x = startx; x  < endx; x++) {
+    for(y = starty; y  < endy; y++) {
+      // is a fruit on the current field?
+      if(fruit_is_on(&game->fruits, y, x) != NULL) {
+        // exclude the field in the middle
+        if(!(curx == x && cury == y)) {
+          // execute the handler for this field (to eat the fruit)
+          check_fruit_collision_handler(game, y, x);
+        }
+        on = 1; // found one!
+      }
+    }
+  }
+  return on;
 }
  
 // calls the effect of the fruit
@@ -16,6 +38,10 @@ int check_fruit_collision_handler(GAME* game, int cury, int curx) {
     // execute the effect of the fruit
     fruit->effect(game);
 
+    WINDOW *win = newwin(1, 1, cury, curx);
+    wprintw(win, " ");
+    wrefresh(win);
+    delwin(win);
     // remove the fruit from the game
     kill_fruit_by_ptr(&game->fruits, fruit);
   }

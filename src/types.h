@@ -38,6 +38,7 @@ typedef struct snake {
   int length; // length of the dynamic array
   direction dir; // the direction of the snake
   int grow; // the number of times the snake has to grow 
+  int eat_range;
 } SNAKE;
 
 // a struct containing all the data needed for a game

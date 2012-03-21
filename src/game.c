@@ -44,8 +44,13 @@ void run() {
   long long res;
   char playername[HIGHSCORE_NAME_LENGTH] = {};
 
+  int range_counter = 0;
+
   // create the game struct
   GAME game = {};
+
+  // set the eat range to 1
+  game.snake.eat_range = 1;
 
   // helper variable to keep track of how long we've paused
   time_t pause_start;
@@ -105,6 +110,15 @@ void run() {
 
     // is the interval over?
     if(res > interval) {
+      // has an effect on the eat_range ?
+      if(game.snake.eat_range > 1) {
+        // every 200th field, decrease the range
+        range_counter = (range_counter + 1) % 200;
+        // it turns to 0 after the 200th field
+        if(range_counter == 0) {
+          game.snake.eat_range--; // so, decrease it!
+        }
+      }
       // new direction? 
       if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
         game.snake.dir = DIR_UP;

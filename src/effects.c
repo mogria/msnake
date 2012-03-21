@@ -34,3 +34,14 @@ void mega_food(GAME *game) {
   game->snake.grow += 4;
   game->highscore += 9;
 }
+
+// ---- eat_boost ----
+// char '&'
+// grow by 1
+// increase highscore by 1
+// grow 1 new fruit
+// SPECIAL: the range the snake eats food increases by 1
+void eat_boost(GAME *game) {
+  normal_effect(game);
+  game->snake.eat_range++;
+}
