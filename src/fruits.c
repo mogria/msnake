@@ -11,6 +11,7 @@ void kill_fruits(FRUITS* fruits) {
   for(i = 0; i < fruits->length; i++) {
     delwin(fruits->fruits[i].win);
   }
+  // reset the length
   fruits->length = 0;
   // free the allocated memory
   free(fruits->fruits);
@@ -79,19 +80,21 @@ void grow_fruit(GAME* game) {
   do {
     randy = rand() % y;
     randx = rand() % x;
-    // check if it is a empty spot
+    // is nothing else there in the generated position?
   } while (snake_part_is_on(&game->snake, randy, randx) != NULL || fruit_is_on(&game->fruits, randy, randx) != NULL || check_extended_border_collision(game, randy, randx));
 
+  // increase the length
+  game->fruits.length++;
   // allocate memory for the new fruit
   if(game->fruits.length == 0) {
     // initialize the array with malloc if it is the first fruit in the array
-    game->fruits.fruits = malloc(sizeof(FRUIT) * ++game->fruits.length);
+    game->fruits.fruits = malloc(sizeof(FRUIT) * game->fruits.length);
   } else {
     // allocate more memory
-    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * ++game->fruits.length);
+    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * game->fruits.length);
   }
   
-  // get a filled struct of the new fruit
+  // get a filled struct (containing the displayed char, the effect & co.) of the new fruit
   get_fruit(&game->fruits.fruits[game->fruits.length - 1], randy, randx);
 }
 
@@ -99,25 +102,32 @@ void grow_fruit(GAME* game) {
 // fill in data into a fruit struct
 void get_fruit(FRUIT *fruit, int posy, int posx) {
   // how the diffrent fruits are displayed
-  static char chars[EFFECTS] = {'x', '@', '%'};
+  static char chars[EFFECTS] = {'x', '@', '%', '&'};
   // the diffrent effects of the fruits
   static void (*effects[EFFECTS])(GAME *) = {
-    normal_effect,
+    normal_effect, // see effects.c
     double_grow,
-    mega_food
+    mega_food,
+    eat_boost
   };
   // the chance a certain fruit appears
-  static int chance[EFFECTS] = {100, 25, 5};
-  static int max_chance = 130;
+  static int chance[EFFECTS] = {100, 25, 5, 5};
+  // the sum of all the chances
+  static int max_chance = 135;
 
   int i = 0;
   int sum = 0;
+
   // generate a random number
   int random = rand() % max_chance;
   // get the number of the fruit out of the random number
+  // the index will increase every time the random value is greater
+  // than the sum of all elements before the index and the element with the index
+  // there is also a bounds check for the array
   while(random >= (sum += chance[i]) && i + 1 < EFFECTS) {
-    i++;
+    i++; // next index
   };
+
   // create a new window
   fruit->win = newwin(1, 1, posy, posx);
   // assign the effect
@@ -132,8 +142,9 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
 void redraw_fruits(FRUITS *fruits) {
   int i;
 
-  // iterate through each fruit and refresh it.
+  // iterate through each fruit.
   for(i = 0; i < fruits->length; i++) {
+    // redraw it!
     redrawwin(fruits->fruits[i].win);
     wrefresh(fruits->fruits[i].win);
   }

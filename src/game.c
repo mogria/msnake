@@ -44,8 +44,13 @@ void run() {
   long long res;
   char playername[HIGHSCORE_NAME_LENGTH] = {};
 
+  int range_counter = 0;
+
   // create the game struct
   GAME game = {};
+
+  // set the eat range to 1
+  game.snake.eat_range = 1;
 
   // helper variable to keep track of how long we've paused
   time_t pause_start;
@@ -85,18 +90,35 @@ void run() {
     // key typed?
     if(ich == ERR) {
     } else if(ich == '0') {
-        interval = default_interval;
+      // reset the speed
+      interval = default_interval;
     } else if(ich == '8') {
-        interval *= 1.1;
+      // speed up
+      interval *= 1.1;
     } else if(ich == '9') {
-        interval *= 0.9;
+      // slow down
+      interval *= 0.9;
     } else {
+      // use this key as a direction
       ch = ich;
     }
     // check if we have an overrun
     current_utc_time(&current_time);
+
+    // calculate the dirrence between the last snake move and the current time
     res = timeval_diff(&last_time, &current_time);
+
+    // is the interval over?
     if(res > interval) {
+      // has an effect on the eat_range ?
+      if(game.snake.eat_range > 1) {
+        // every 200th field, decrease the range
+        range_counter = (range_counter + 1) % 200;
+        // it turns to 0 after the 200th field
+        if(range_counter == 0) {
+          game.snake.eat_range--; // so, decrease it!
+        }
+      }
       // new direction? 
       if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
         game.snake.dir = DIR_UP;
@@ -112,7 +134,11 @@ void run() {
 
       // refresh the screen
       refresh();
+
+      // display the status bar (top-right)
       status_display(&game);
+
+      // update the time when we last moved the snake
       last_time = current_time;
     }
 
