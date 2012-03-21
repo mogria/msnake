@@ -28,7 +28,10 @@
 #endif
 
 // the timespec structure is not available on windows
-#define timespec timeval
+struct timespec {
+	time_t tv_sec;
+	unsigned long tv_nsec;
+};
 
 // a little helper function
 LARGE_INTEGER getFILETIMEoffset() {
@@ -102,7 +105,12 @@ void current_utc_time(struct timespec *ts) {
   ts->tv_sec = mts.tv_sec;
   ts->tv_nsec = mts.tv_nsec;
 #else
+  
+#ifdef _WIN32
+  clock_gettime(CLOCK_REALTIME, (struct timeval*)ts);
+#else
   clock_gettime(CLOCK_REALTIME, ts);
+#endif /* _WIN32 */
 }
 #endif
 
