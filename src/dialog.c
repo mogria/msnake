@@ -2,17 +2,42 @@
 #include "highscore.h"
 #include "dialog.h"
 
-// create a basic dialog with title
+// create a basic dialog with title which looks like this:
+//
+// +--------------------------------------+
+// +---------------- TITLE ---------------+
+// +--------------------------------------+
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// |                                      |
+// +--------------------------------------+
+//
 WINDOW *create_dialog_window(const char *title) {
   WINDOW *win;
   int sx, sy, i, u, startpos;
-  // create a little window in the center of the screen with a border and a size of 40x20
+
+  // get the screen size
   getmaxyx(stdscr, sy, sx);
+  // create a little window in the center of the screen with a border and a size of 40x20
   win = newwin(DIALOG_HEIGHT, DIALOG_WIDTH, sy / 2 - DIALOG_HEIGHT / 2, sx / 2 - DIALOG_WIDTH / 2);
-  // make the border
+
+  // create the border
   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 
-  // fill the first two lines with "-" and "+" on the edge
+  // fill the first two lines with "-" and "+" on the border
   for(u = 1; u <= 2; u++) {
     for(i = 0; i < DIALOG_WIDTH; i++) {
       mvwprintw(win, u, i, "%c", i == 0 || i == DIALOG_WIDTH - 1 ? '+' : '-');
@@ -21,18 +46,25 @@ WINDOW *create_dialog_window(const char *title) {
 
   // print the title in the middle of the dialog
   startpos = DIALOG_WIDTH / 2 - strlen(title) / 2;
+  // print a space before the title
   mvwprintw(win, 1, startpos - 1, " ");
+  // print the title itself
   mvwprintw(win, 1, startpos, "%s", title);
+  // print a space after the title
   mvwprintw(win, 1, startpos + strlen(title), " ");
   return win;
 }
 
 // wait until enter is pressed
 void wait_return(WINDOW *win) {
-  int ch;
+  int ch; // the char currently pressed
+
+  // request a char
   while((ch = wgetch(win))) {
+    // is it the "enter"-key?
     if(ch == '\n') {
-      break;
+      // get out of here
+      break; 
     } 
   }
 }
@@ -41,14 +73,18 @@ void wait_return(WINDOW *win) {
 int create_enter_dialog(const char *title, const char *contents, int lines) {
   WINDOW *win = create_dialog_window(title);
   int i;
-  // insert stuff into the dialog
+
+  // insert the stuff in "contents" into the dialog
   for(i = 0; i < lines; i++) {
     mvwprintw(win, i + 3, 1, "%s", &contents[i * CONTENT_WIDTH]);
   }
+
   // display the dialog
   wrefresh(win);
+
   // wait for 'enter'
   wait_return(win);
+  
   // free the allocated memory of the window
   delwin(win);
   return 0;
@@ -58,32 +94,45 @@ int create_enter_dialog(const char *title, const char *contents, int lines) {
 // creates a dialog with menu entries, you can press numbers to select a menu entry and close the dialog
 int create_numbered_dialog(const char *title, const char *contents, int lines) {
   WINDOW *win = create_dialog_window(title);
-  int i, ch;
-  // insert menu entries into
+  int i, ch, number = 0;
+
+  // insert menu entries into the dialog
   for(i = 0; i < lines; i++) {
     mvwprintw(win, i + 3, 1, &contents[i * CONTENT_WIDTH], i + 1);
   }
+
   // display the dialog
   wrefresh(win);
 
   // wait for some input
   while((ch = wgetch(win))) {
+    // error? begin again.
     if(ch == ERR) continue;
+
     // select the first menu entry if enter is pressed
     if(ch == '\n') ch = '1';
     // a number pressed?
     if(ch >= '0' && ch <= '9') {
-      // return the number pressed
-      delwin(win);
-      return ch - '0';
+      number = ch - '0';
+      // prevent from handling numbers which are > than the number of menu entries
+      if(ch - '0' <= lines) {
+        // get out of the loop
+        break;
+      }
     }
   }
-  return 0;
+
+  // delete the window
+  delwin(win);
+
+  // return the number pressed
+  return number;
 }
 
 // displays the main menu
 int display_menu() {
-  // the contents of the dialog
+  // the contents of the menu
+  // %i will be replaced with the number of the menu entry
   char menu[][CONTENT_WIDTH] = {
   "%i) Start the game",
   "%i) Highscores",
@@ -154,6 +203,7 @@ int pause_dialog() {
 // display a table containing the highscores of the players
 void show_highscores() {
   int num, i;
+  char *highscore_table;
   // read all the submitted highscores from a file
   HIGHSCORE *highscore = read_highscore(&num);
 
@@ -161,24 +211,30 @@ void show_highscores() {
   if(num > DIALOG_HEIGHT - 6) {
     num = DIALOG_HEIGHT - 6;
   }
+
   // create a char array for the content of the highscore table
-  char *highscore_table = calloc((num + 2) * CONTENT_WIDTH, sizeof(char));
-  // insert the table heading
+  highscore_table = calloc((num + 2) * CONTENT_WIDTH, sizeof(char));
+
+  // create a simple table heading inside of the dialog
   snprintf(highscore_table, CONTENT_WIDTH, "POS            NAME  PTS   SEC  SCORE");
   snprintf(highscore_table + CONTENT_WIDTH, CONTENT_WIDTH, "-------------------------------------");
+
   // insert the highscores
   for(i = 0; i < num; i++) {
     // insert a highscore record
-    snprintf(highscore_table + (i + 2) * CONTENT_WIDTH,
-      CONTENT_WIDTH, "%2i. %15s %4i  %4li  %5i",
-      i + 1,
-      highscore[i].name,
+    snprintf(highscore_table + (i + 2) * CONTENT_WIDTH, // the position on the highscore table array
+      CONTENT_WIDTH, // do not allow the line to be longer than 38 chars
+      "%2i. %15s %4i  %4li  %5i", // the format of the line
+      i + 1, // the rank
+      highscore[i].name, // the data
       highscore[i].points,
-      highscore[i].time_sec,
+      highscore[i].time_sec,   
       highscore[i].highscore);
   }
+
   // create a dialog and display the data
   create_enter_dialog("HIGHSCORES", highscore_table, num + 2);
+
   // free the resources
   free(highscore_table);
 }

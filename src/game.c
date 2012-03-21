@@ -85,17 +85,25 @@ void run() {
     // key typed?
     if(ich == ERR) {
     } else if(ich == '0') {
-        interval = default_interval;
+      // reset the speed
+      interval = default_interval;
     } else if(ich == '8') {
-        interval *= 1.1;
+      // speed up
+      interval *= 1.1;
     } else if(ich == '9') {
-        interval *= 0.9;
+      // slow down
+      interval *= 0.9;
     } else {
+      // use this key as a direction
       ch = ich;
     }
     // check if we have an overrun
     current_utc_time(&current_time);
+
+    // calculate the dirrence between the last snake move and the current time
     res = timeval_diff(&last_time, &current_time);
+
+    // is the interval over?
     if(res > interval) {
       // new direction? 
       if((ch == KEY_UP || ch == 'w') && game.snake.dir != DIR_DOWN) {
@@ -112,7 +120,11 @@ void run() {
 
       // refresh the screen
       refresh();
+
+      // display the status bar (top-right)
       status_display(&game);
+
+      // update the time when we last moved the snake
       last_time = current_time;
     }
 

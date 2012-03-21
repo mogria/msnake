@@ -2,6 +2,7 @@
 
 // calculate the highscore out of the points and the time needed
 int calculate_score(int points, long time_sec) {
+  // 10 to highscore for every point you make -2 for every second you need
   return points * 10 - time_sec * 2;
 }
 
@@ -38,18 +39,28 @@ HIGHSCORE *read_highscore(int *num) {
 
   // read the records into the `ptr`-array
   while(fread(&current, sizeof(HIGHSCORE), 1, hs_file) != 0) {
-    ptr = realloc(ptr, sizeof(HIGHSCORE) * ++(*num));
+    // next record
+    (*num)++;
+    // allocate memory for the new record
+    ptr = realloc(ptr, sizeof(HIGHSCORE) * *num);
+    // save the new record in the array
     ptr[*num - 1] = current;
   }
 
-  // sort the whole thing using a bubble sort algorithm
+  // sort the whole thing using a simple bubble sort algorithm
   do {
+    // if this variable contains 0 at the end of the following for loop the
+    // array is properly sorted
     swapped = 0;
+    // iterate througth each record except the last
     for(x = 0; x < *num - 1; x++) {
+      // check if the next record's value is greater than the value of the current one
       if(ptr[x].highscore < ptr[x + 1].highscore) {
+        // swap the position of the two elements
         current = ptr[x];
         ptr[x] = ptr[x + 1];
         ptr[x + 1] = current;
+        // the array isn't properly sorted 
         swapped = 1;
       }
     }
@@ -63,14 +74,15 @@ HIGHSCORE *read_highscore(int *num) {
 int add_highscore(char *name, int points, int time_sec) {
   FILE *hs_file;
   HIGHSCORE highscore;
+
   // write the values into the struct
   strncpy(highscore.name, name, HIGHSCORE_NAME_LENGTH - 1);
+  highscore.name[HIGHSCORE_NAME_LENGTH - 1] = '\0'; // make sure the string is ended properly
   highscore.points = points;
   highscore.time_sec = time_sec;
   highscore.highscore = calculate_score(points, time_sec);
-  highscore.name[HIGHSCORE_NAME_LENGTH - 1] = '\0';
 
-  // open the highscore fiel in append mode
+  // open the highscore file in append mode
   if((hs_file = fopen(HIGHSCORE_FILE, "a")) == NULL) {
     return 1;
   }

@@ -4,8 +4,9 @@
 #include "game.h"
 
 int main() {
-  int action;
-  // for some better random numbers
+  int action; // the menu entry number the user selected
+
+  // for some better random numbers (and not always the same)
   srand(time(NULL));
   
   // start the curses mode
@@ -39,9 +40,9 @@ int main() {
   // end the curses mode
   endwin();
   
-  // close the logfile
-  glog(NULL);
   // free the allocated memory for the highscore
   read_highscore(NULL);
+  // close the logfile
+  glog(NULL);
   return EXIT_SUCCESS;
 }
