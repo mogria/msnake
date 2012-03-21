@@ -34,7 +34,7 @@ long long timeval_diff(struct timespec* tv1, struct timespec* tv2) {
 }
 
 void run() {
-  int ch, ich, y, x, rows, columns, success = 1;
+  int ch = 0, ich, y, x, rows, columns, success = 1;
 
   // some variables for the timer (inclusive the interval)
   struct timespec last_time = {};
