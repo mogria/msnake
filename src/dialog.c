@@ -242,18 +242,47 @@ void show_highscores() {
 void enter_string(char *title, char *content, int lines, int posy, int posx, char *buf, int length) {
   WINDOW *win = create_dialog_window(title);
   int i;
+  int pos = 0;
+  int ch = 0;
 
   //print out the content
   for(i = 0; i < lines; i++) {
     mvwprintw(win, i + 3, 1, "%s", &content[i * CONTENT_WIDTH]);
   }
 
-  // turn on the echo on the screen
-  echo();
-  // get the name
-  mvwgetnstr(win, posy, posx, buf, length);
-  // turn the echo off again
-  noecho();
+  // - let the user input a string
+  // read a char until we receive a line break 
+  while((ch = mvwgetch(win, posy, posx + pos)) && ch != '\n') {
+    // prevent a buffer overflow
+    if(ch == KEY_BACKSPACE || ch == 127) {
+      // delete the character at the current position from the screen and the buffer
+      buf[pos] = '\0';
+      mvwprintw(win, posy, posx + pos, " ");
+
+      // go 1 back in the buffer but not under 0
+      if(pos > 0) {
+        pos--;
+      }
+
+      // delete the last typed character from the screen and the buffer
+      mvwprintw(win, posy, posx + pos, " ");
+      buf[pos] = '\0';
+    
+    // check if it is a letter
+    } else if((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+      // print the character to the screen
+      mvwprintw(win, posy, posx + pos, "%c", ch);
+
+      // write the typed key into the buffer
+      buf[pos] = ch; 
+      // move forward in the buffer but not over the length - 1
+      if(pos < length - 1) {
+        pos++;
+      }
+    }
+  }
+
+  buf[length - 1] = '\0';
   // delete the dialog
   delwin(win);
 }

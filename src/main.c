@@ -11,6 +11,8 @@ int main() {
   
   // start the curses mode
   initscr();
+  // get more controll over the input
+  cbreak();
   //getch returns ERR if no input is present and doesn't wait
   nodelay(stdscr, TRUE);
   //don't echo the inserted keys to the screen
