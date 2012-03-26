@@ -6,31 +6,12 @@
 #include "dialog.h"
 #include "highscore.h"
 #include "status-display.h"
-#include "current_utc_time.h"
+#include "time-helpers.h"
 
 // end the game, free the resources
 void kill_game(GAME *game) {
   kill_fruits(&game->fruits);
   kill_snake(&game->snake);
-}
-
-
-// calculate the difference between two timespec structs
-long long timeval_diff(struct timespec* tv1, struct timespec* tv2) {
-  long long diff = 0;
-  // calculate the diffrence of the nanoseconds
-  long nano = (tv2->tv_nsec - tv1->tv_nsec);
-  int add = 0;
-
-  // some calculations if the nanoseconds of struct 1 were bigger
-  if(nano < 0) {
-    nano = 1000000000 + nano;
-    add = 1;
-  }
-  diff = nano;
-  // add the seconds
-  diff += (tv2->tv_sec - tv1->tv_sec - add) * 1000000000;
-  return diff;
 }
 
 void run() {
