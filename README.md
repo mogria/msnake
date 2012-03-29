@@ -26,7 +26,7 @@ The advantage of using git is you can update the downloaded code simply by enter
 
 If you don't have git installed you can download a zip-file of the repository and extract it.
 
-## Compiling
+## Compiling (only Linux & Mac)
 
 Change into the Git-Repository (or the folder where you extracted the zip file) and enter the following commands to compile the game:
 
@@ -62,8 +62,11 @@ To get cMake, go to [cMake.org](http;//www.cmake.org) and download and install t
 
 ## Windows
 
-It was possible to compile the game on Windows with some minor changes to the source Code. You can download the compiled win32 executeable in the download section. The REpository will be updated soon to make it easier to compile the game on windows. Some instructions how to compile it with MinGW will also be added.
+You can download an old compiled win32 executeable in the download section. You can also compile the game at yourself.
+To do so, you need cMake and MinGW installed. You also need to install `pdcurses` using `mingw-get`. Then open the command line and enter the following commands:
 
+    > cmake -g "MinGW Makefiles" .
+    > make
 
 # How to create debian package of msnake
 
