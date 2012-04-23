@@ -175,17 +175,21 @@ void display_help() {
   " O        the snake body",
   "          you shouldn't hit yourself  ",
   " #        the wall, don't hit it!",
-  " x        simple food, +1 highscore",
+  " x        simple food, +1 point",
   "          +1 length, +1 new food",
-  " @        double food, +1 highscore",
+  " @        double food, +1 point",
   "          +1 length, +2 new food",
-  " %        mega food, +10 highscore",
+  " %        mega food, +10 points",
   "          +5 length, +1 new food",
+  " &        eat boost, increases",
+  "          range of eating for a",
+  "          short time",
+  "",
   "press enter to go back to the menu .."
   };
 
   // create the dialog
-  create_enter_dialog("HELP", (const char *)help, 11);
+  create_enter_dialog("HELP", (const char *)help, 15);
 }
 
 // displays the pause dialog
