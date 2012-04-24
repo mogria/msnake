@@ -72,7 +72,7 @@ HIGHSCORE *read_highscore(int *num) {
 
 // add an entry to the highscore file
 int add_highscore(char *name, int points, int time_sec) {
-  FILE *hs_file;
+  FILE *hs_file = NULL;
   HIGHSCORE highscore;
 
   // write the values into the struct
