@@ -8,6 +8,11 @@ int main() {
 
   // for some better random numbers (and not always the same)
   srand(time(NULL));
+
+#if _BSD_SOURCE || _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+  // remove delay when pressing ESC
+  setenv("ESCDELAY", "0", 1);
+#endif
   
   // start the curses mode
   initscr();
