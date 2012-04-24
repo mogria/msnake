@@ -15,7 +15,7 @@ void kill_game(GAME *game) {
 }
 
 void run() {
-  int ch = 0, ich, y, x, rows, columns, success = 1;
+  int ch = 0, ich, i, success = 1;
 
   // some variables for the timer (inclusive the interval)
   struct timespec last_time = {};
@@ -36,28 +36,24 @@ void run() {
   // helper variable to keep track of how long we've paused
   time_t pause_start;
 
+  // get the dimensions of the terminal and store them in the GAME struct
+  getmaxyx(stdscr, game.rows, game.columns);
 
-  // get the dimensions of the terminal
-  getmaxyx(stdscr, rows, columns);
-
+  // clear the whole screen
   clear();
-  // create a border
-  for(x = 0; x < columns; x++) {
-    for(y = 0; y < rows; y++) {
-      if(check_extended_border_collision(&game, y, x)) {
-        mvprintw(y, x, "#");
-      }
-    }
-  }
+
+  // draw the walls
+  draw_border(&game);
+
+  // show the newly created walls
   refresh();
 
   // place the snake in the middle of the game field
-  grow_snake(&game.snake, rows / 2, columns / 2);
+  grow_snake(&game.snake, game.rows / 2, game.columns / 2);
   game.snake.dir = DIR_LEFT;
 
   // create some fruits on the screen
   // NOM, NOM, NOM
-  int i; 
   for(i = 0; i < 50; i++) {
     grow_fruit(&game);
   }
@@ -66,8 +62,9 @@ void run() {
   time(&game.started);
   // get the current time
   current_utc_time(&last_time);
-  while((ich = getch()) && success && ch != 'x') {
-    
+
+  // start the event loop
+  while((ich = getch()) && success) {
     // key typed?
     if(ich == ERR) {
     } else if(ich == '0') {
@@ -155,6 +152,18 @@ void run() {
 
   // free all the resources reserved in the game struct
   kill_game(&game);
+}
+
+void draw_border(GAME *game) {
+  int x, y;
+  // create a border
+  for(x = 0; x < game->columns; x++) {
+    for(y = 0; y < game->rows; y++) {
+      if(check_extended_border_collision(game, y, x)) {
+        mvprintw(y, x, "#");
+      }
+    }
+  }
 }
 
 // redraw the whole screen

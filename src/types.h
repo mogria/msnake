@@ -49,6 +49,8 @@ typedef struct game {
   time_t ended;  // timestamp when the has been ended
   time_t paused; // the amount of seconds the game was paused
   int highscore; // the number of points
+  unsigned int rows;
+  unsigned int columns;
 } GAME;
 
 
