@@ -20,7 +20,7 @@ void run() {
   // some variables for the timer (inclusive the interval)
   struct timespec last_time = {};
   struct timespec current_time = {};
-  long long default_interval = 20000000;
+  long long default_interval = 40000000;
   long long interval = default_interval;
   long long res;
   char playername[HIGHSCORE_NAME_LENGTH] = {};
