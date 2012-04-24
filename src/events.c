@@ -60,15 +60,8 @@ int check_fruit_collision_handler(GAME* game, int cury, int curx) {
 // #               #
 // #################
 int check_border_collision(GAME* game, int cury, int curx) {
-  int y,x;
-  getmaxyx(stdscr, y, x); // get the screen size
-
-  // reduce the screen size by 1
-  y--;
-  x--;
-
   // check if the given position has a distance of 1 from the screen border
-  return cury <= 0 || curx <= 0 || cury >= y || curx >= x; 
+  return cury <= 0 || curx <= 0 || cury >= game->rows - 1 || curx >= game->columns - 1; 
 }
 
 // check if the snake collides with the border which looks like this
@@ -80,16 +73,15 @@ int check_border_collision(GAME* game, int cury, int curx) {
 // #               #
 // #######   #######
 int check_extended_border_collision(GAME* game, int cury, int curx) {
-  int y,x, range, rangex1, rangex2, rangey1, rangey2;
-  getmaxyx(stdscr, y, x); // get the screen size
+  int range, rangex1, rangex2, rangey1, rangey2;
 
   // # calculate the positions where holes in the wall start and end
   //  do that for the top and the bottom (x-axis)
-  range = x / 2;
+  range = game->columns / 2;
   rangex1 = range * 0.9;
   rangex2 = range * 1.1;
   // do that for the left and the right side (y-axis)
-  range = y / 2;
+  range = game->rows / 2;
   rangey1 = range * 0.9;
   rangey2 = range * 1.1;
   

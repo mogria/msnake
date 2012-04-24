@@ -72,14 +72,11 @@ FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx) {
 
 // create a new fruit in the game
 void grow_fruit(GAME* game) {
-  int y,x,randy,randx;
-  // get the dimensions of the screen
-  getmaxyx(stdscr, y, x);
-
+  int randy,randx;
   // generate a new random position until a empty spot is found
   do {
-    randy = rand() % y;
-    randx = rand() % x;
+    randy = rand() % game->rows;
+    randx = rand() % game->columns;
     // is nothing else there in the generated position?
   } while (snake_part_is_on(&game->snake, randy, randx) != NULL || fruit_is_on(&game->fruits, randy, randx) != NULL || check_extended_border_collision(game, randy, randx));
 

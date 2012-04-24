@@ -15,13 +15,13 @@ void kill_game(GAME *game) {
 }
 
 void run() {
-  int ch = 0, ich, i, success = 1;
+  int ch = 0, ich, i, current_columns, current_rows, success = 1;
 
   // some variables for the timer (inclusive the interval)
-  struct timespec last_time = {};
-  struct timespec current_time = {};
-  long long default_interval = 40000000;
-  long long interval = default_interval;
+  struct timespec last_time              = {};
+  struct timespec current_time           = {};
+  long long default_interval             = 40000000;
+  long long interval                     = default_interval;
   long long res;
   char playername[HIGHSCORE_NAME_LENGTH] = {};
 
@@ -119,9 +119,14 @@ void run() {
       // update the time when we last moved the snake
       last_time = current_time;
     }
+    
+    getmaxyx(stdscr, current_rows, current_columns);
+    // 'p' pressed || size of the terminal changed
+    if(ich == 'p' || (current_rows != game.rows || current_columns != game.columns)) {
+      // use the terminal new size
+      game.rows = current_rows;
+      game.columns = current_columns;
 
-    // 'p' pressed
-    if(ich == 'p') {
       // get the time
       time(&pause_start);
 
@@ -169,6 +174,8 @@ void draw_border(GAME *game) {
 // redraw the whole screen
 void redraw_game(GAME *game) {
   // redraw the main window (containg the border and stuff)
+  clear();
+  draw_border(game);
   redrawwin(stdscr);
   refresh();
   

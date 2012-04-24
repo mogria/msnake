@@ -14,13 +14,11 @@
 //                                              #
 //                                              #
 void status_display(GAME *game) {
-  int sx, sy;
   const int width = 25; // the width in chars of the display
-  getmaxyx(stdscr, sy, sx); // get the screen size
 
   // create a new window in the top right corner with a height of 1
   // and a width of 'width'
-  WINDOW *win = newwin(1, width, sy * 0, sx - width);
+  WINDOW *win = newwin(1, width, 0, game->columns - width);
 
   // print out the current length, the points, the time and the current highscore
   wprintw(win,"%03iL-%05iP-%04is-%04iSCR",

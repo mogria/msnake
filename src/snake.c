@@ -66,7 +66,7 @@ int move_snake(GAME *game) {
   int success = 1, i;
 
   // some variables containing positions of certain things
-  int maxx, maxy, curx, cury, tmpy, tmpx;
+  int curx, cury, tmpy, tmpx;
 
   // callbacks to check collisions
   int (*collision_checks[EVENTS])(GAME*, int, int) = {
@@ -90,8 +90,6 @@ int move_snake(GAME *game) {
   // difference on y-axis according to the direction
   int ydiff = game->snake.dir == DIR_UP ? -1 : (game->snake.dir == DIR_DOWN ? 1 : 0);
 
-  // the size of the screen
-  getmaxyx(stdscr, maxy, maxx);
   // the position of the snake head
   getbegyx(game->snake.parts[0], cury, curx);
 
@@ -100,11 +98,11 @@ int move_snake(GAME *game) {
   tmpx = curx;
 
   // calculate the new position and prevent from exceeding the size of the screen
-  cury = (cury + ydiff) % maxy;
-  curx = (curx + xdiff) % maxx;
+  cury = (cury + ydiff) % game->rows;
+  curx = (curx + xdiff) % game->columns;
   // the values have to be positive
-  cury = cury < 0 ? maxy + cury : cury;
-  curx = curx < 0 ? maxx + curx : curx;
+  cury = cury < 0 ? game->rows + cury : cury;
+  curx = curx < 0 ? game->columns + curx : curx;
 
   // check for collisons and execute the handlers if a collision occured
   for(i = 0; i < EVENTS && success; i++) {
