@@ -92,12 +92,9 @@ void current_utc_time(struct timespec *ts) {
   mach_port_deallocate(mach_task_self(), cclock);
   ts->tv_sec = mts.tv_sec;
   ts->tv_nsec = mts.tv_nsec;
-#else
-  
-#ifdef _WIN32
+#elif _WIN32
   clock_gettime(CLOCK_REALTIME, (struct timeval*)ts);
-#else
+#else /* LINUX */
   clock_gettime(CLOCK_REALTIME, ts);
-#endif /* _WIN32 */
-}
 #endif
+}
