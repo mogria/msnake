@@ -3,4 +3,9 @@
 #include <stdlib.h>
 #include "types.h"
 
+void init_curses();
+void end_curses();
+
+void main_menu();
+
 #endif /* _MAIN_H */
