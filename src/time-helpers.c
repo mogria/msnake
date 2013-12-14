@@ -75,7 +75,7 @@ int clock_gettime(int X, struct timeval *tv) {
     microseconds = (double)t.QuadPart / frequencyToMicroseconds;
     t.QuadPart = microseconds;
     tv->tv_sec = t.QuadPart / 1000000;
-    tv->tv_usec = (t.QuadPart % 1000000) * 1000;
+    tv->tv_usec = t.QuadPart % 1000000;
     return (0);
 }
 #endif /* _WIN32 */
@@ -93,7 +93,10 @@ void current_utc_time(struct timespec *ts) {
   ts->tv_sec = mts.tv_sec;
   ts->tv_nsec = mts.tv_nsec;
 #elif _WIN32
-  clock_gettime(CLOCK_REALTIME, (struct timeval*)ts);
+  struct timeval tv;
+  clock_gettime(CLOCK_REALTIME, &tv);
+  ts->tv_sec = tv.tv_sec;
+  ts->tv_nsec = tv.tv_usec * 1000;
 #else /* LINUX */
   clock_gettime(CLOCK_REALTIME, ts);
 #endif
