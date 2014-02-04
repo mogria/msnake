@@ -3,7 +3,7 @@ snake
 *.sw*
 game.log
 *.o
-bin/*
+bin
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
@@ -12,3 +12,5 @@ install_manifest.txt
 usr/*
 *.deb
 msnake_scores.dat
+packaging
+build

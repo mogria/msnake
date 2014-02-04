@@ -2,30 +2,19 @@
 
 base=`readlink -mn $0`
 basedir=`dirname $base`
-basename=`basename $basedir`
-debname=$basename.deb
 
-if [ ! -z $1 ]; then
-  debname=$1.deb
-  if [ "${1:0:1}" == "/" ]; then
-    debname=`basename $1`.deb
-    basedir=`dirname $1`
-  fi
-fi
+cd "$basedir"
 
-if [ ! -f "bin/msnake" ]; then
-  echo "msnake binary not found, thus let's compile!"
-  cmake .
-  make
-fi
+version=0.1.2
+tagname="v$version"
+packagename="msnake-$version"
+tarball="$packagename.tar.gz"
 
-mkdir -p package/usr/bin/
-cp -rf DEBIAN package
-cp -f bin/msnake package/usr/bin
+if [ ! -d packaging ] ; then mkdir packaging ; fi
+git archive "$tagname" --prefix="$packagename/" --output "packaging/$tarball"
+cd packaging
+tar xf "$tarball"
 
-echo -n "Creating $debname ..."
-dpkg-deb -z8 -Zgzip --build package > /dev/null
-mv -f package.deb $basedir/$debname
-rm -rf package
+cd "$packagename"
 
-echo " Done!"
+dpkg-buildpackage
