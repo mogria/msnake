@@ -1,9 +1,0 @@
-Package: msnake
-Version: 0.1.1
-Source: msnake
-Section: games
-Priority: extra
-Maintainer: Mogria <m0gr14@gmail.com>; Timo Furrer <timo.furrer@gmail.com>
-Depends: ncurses-bin
-Architecture: all
-Description: A simple snake game written in C using the ncurses library.
