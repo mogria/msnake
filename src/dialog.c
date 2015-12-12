@@ -138,11 +138,12 @@ int display_menu() {
   "%i) Highscores",
   "%i) Controls",
   "%i) Help",
+  "%i) Clear highscores",
   "%i) Exit"
   };
   
   // create a numbered dialog
-  return create_numbered_dialog("MENU", (char *)menu, 5);
+  return create_numbered_dialog("MENU", (char *)menu, 6);
 }
 
 // displays the controls dialog
