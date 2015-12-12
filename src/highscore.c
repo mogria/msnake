@@ -1,4 +1,5 @@
 #include "highscore.h"
+#include <wordexp.h>
 
 // calculate the highscore out of the points and the time needed
 int calculate_score(int points, long time_sec) {
@@ -24,7 +25,7 @@ HIGHSCORE *read_highscore(int *num) {
   }
 
   // open the highscore file
-  if((hs_file = fopen(HIGHSCORE_FILE, "r")) == NULL) {
+  if((hs_file = fopen(wordexp(HIGHSCORE_FILE), "r")) == NULL) {
     return NULL;
   }
 
@@ -83,7 +84,7 @@ int add_highscore(char *name, int points, int time_sec) {
   highscore.highscore = calculate_score(points, time_sec);
 
   // open the highscore file in append mode
-  if((hs_file = fopen(HIGHSCORE_FILE, "a")) == NULL) {
+  if((hs_file = fopen(wordexp(HIGHSCORE_FILE), "a")) == NULL) {
     return 1;
   }
   // append a structure to the file
@@ -97,7 +98,7 @@ int add_highscore(char *name, int points, int time_sec) {
 void clear_highscore() {
   FILE *hs_file = NULL;
   // open the file in write mode
-  if((hs_file = fopen(HIGHSCORE_FILE, "w")) != NULL) {
+  if((hs_file = fopen(wordexp(HIGHSCORE_FILE), "w")) != NULL) {
     fclose(hs_file);
   }
 }
