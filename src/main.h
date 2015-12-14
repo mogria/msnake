@@ -8,4 +8,6 @@ void end_curses();
 
 void main_menu();
 
+void set_colors();
+
 #endif /* _MAIN_H */

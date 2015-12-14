@@ -41,6 +41,7 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
   // create a new window
   snake->parts[snake->length - 1] = win = newwin(1, 1, posy, posx);
   // print the character on the window
+  wattron(win, COLOR_PAIR(2));
   wprintw(win, "%c", 'O');
   // display the part
   wrefresh(win);

@@ -62,8 +62,22 @@ void init_curses() {
   nodelay(stdscr, TRUE);
   // don't echo the inserted keys to the screen
   noecho();
+  // colors!
+  start_color();
+  set_colors();
   // also grab keys like F1 etc.
   keypad(stdscr, TRUE);
+}
+
+void set_colors() {
+  // these don't actually have anything to do with binary, so we are free to use "normal" numbers
+  init_pair(1, COLOR_RED, COLOR_BLACK); // red on black
+  init_pair(2, COLOR_GREEN, COLOR_BLACK); // green on black
+  init_pair(3, COLOR_YELLOW, COLOR_BLACK); // yellow on black
+  init_pair(4, COLOR_BLUE, COLOR_BLACK); // blue on black
+  init_pair(5, COLOR_MAGENTA, COLOR_BLACK); // magenta on black
+  init_pair(6, COLOR_CYAN, COLOR_BLACK); // cyan on black
+  init_pair(7, COLOR_WHITE, COLOR_BLACK); // white on black
 }
 
 void end_curses() {
