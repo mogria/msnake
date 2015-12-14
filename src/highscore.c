@@ -6,17 +6,57 @@ int calculate_score(int points, long time_sec) {
   return points * 10 - time_sec * 2;
 }
 
+char* user_home;
+char* hscore_file_path;
+size_t hscore_path_len;
+char* hscore_file;
+
+#ifdef _WIN32
+#include <windows.h>
+int msnake_mkdir(char * dirname) {
+    return _mkdir(dirname);
+}
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
+int msnake_mkdir(char * dirname) {
+    return mkdir(dirname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+}
+#endif
+
+static char *highscore_file = NULL;
+char *get_highscore_file() {
+    if(highscore_file == NULL) {
+        // get the highscore file name
+        char *user_home = getenv("HOME");
+        if(user_home == NULL) {
+            // if no $HOME variable is available we probably are on windows
+            user_home = getenv("APPDATA");
+            if(user_home == NULL) {
+                // if that still didn't work, simply use the current directory
+                user_home = ".";
+            }
+        }
+
+        int highscore_directory_path_length = strlen(user_home) + 1 + strlen(HIGHSCORE_DIR);
+        int highscore_path_length = highscore_directory_path_length + 1 + strlen(HIGHSCORE_FILE) + 1;
+
+        highscore_file = malloc(highscore_path_length);
+        strcpy(highscore_file, user_home);
+        strcat(highscore_file, "/");
+        strcat(highscore_file, HIGHSCORE_DIR);
+
+        // make sure the directory exists
+        msnake_mkdir(highscore_file);
+        strcat(highscore_file, "/");
+        strcat(highscore_file, HIGHSCORE_FILE);
+    }
+    return highscore_file;
+}
+
 
 // read the highscore file
 HIGHSCORE *read_highscore(int *num) {
-  // get highscore file
-  user_home = getenv("HOME");
-  hscore_file_path = HIGHSCORE_FILE;
-  hscore_path_len = strlen(user_home) + strlen(hscore_file_path) + 1;
-  hscore_file = malloc(hscore_path_len);
-  strcpy(hscore_file, user_home);
-  strcat(hscore_file, hscore_file_path);
-  
   // static pointer to an array of highscore records
   static HIGHSCORE *ptr = NULL;
   // the highscore file handle
@@ -25,14 +65,20 @@ HIGHSCORE *read_highscore(int *num) {
   // the current record
   HIGHSCORE current;
 
-  // if a NULL pointer is given free all the allocated memory and exit
+  // if a NULL pointer is given, free all the allocated memory and exit
   if(num == NULL) {
     free(ptr);
+    ptr = NULL;
+    free(highscore_file);
+    highscore_file = NULL;
     return NULL;
   }
 
+  // set num to 0 in case the highscore file cannot be opened
+  *num = 0;
+
   // open the highscore file
-  if((hs_file = fopen(hscore_file, "r")) == NULL) {
+  if((hs_file = fopen(get_highscore_file(), "r")) == NULL) {
     return NULL;
   }
 
@@ -41,8 +87,7 @@ HIGHSCORE *read_highscore(int *num) {
     free(ptr);
   }
 
-  // initialize the ptr and num
-  *num = 0;
+  // initialize ptr
   ptr = malloc(*num);
 
   // read the records into the `ptr`-array
@@ -91,7 +136,7 @@ int add_highscore(char *name, int points, int time_sec) {
   highscore.highscore = calculate_score(points, time_sec);
 
   // open the highscore file in append mode
-  if((hs_file = fopen(hscore_file, "a")) == NULL) {
+  if((hs_file = fopen(get_highscore_file(), "a")) == NULL) {
     return 1;
   }
   // append a structure to the file
@@ -104,8 +149,8 @@ int add_highscore(char *name, int points, int time_sec) {
 // clear the highscore file
 void clear_highscore() {
   FILE *hs_file = NULL;
-  // open the file in write mode
-  if((hs_file = fopen(hscore_file, "w")) != NULL) {
+  // open the file in write mode so it gets truncated
+  if((hs_file = fopen(get_highscore_file(), "w")) != NULL) {
     fclose(hs_file);
   }
 }
