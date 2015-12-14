@@ -89,9 +89,7 @@ To contribute to this awesome project, you can visit the repo on [GitHub](http:/
 
 This list contains stuff we want to implement or change.
 
-* don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
 * add a scroll function to the highscore? or delete low entries?
-* add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
 * A Settings Menu
 * More food with diffrent effects?
   * a fruit which changes the direction of the snake? (or a key?)

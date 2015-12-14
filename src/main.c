@@ -37,9 +37,12 @@ void main_menu() {
     } else if(selected_menu_entry == 4) {
       // display a dialog which explains the elements of the game
       display_help();
+    } else if(selected_menu_entry == 5) {
+      // clear highscores
+      clear_highscore();
     }
     // leave if the menu entry "exit" is chosen
-  } while(selected_menu_entry != 5);
+  } while(selected_menu_entry != 6);
 }
 
 void init_curses() {

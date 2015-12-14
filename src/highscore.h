@@ -4,7 +4,12 @@
 #include <stdio.h>
 #include "types.h"
 
-#define HIGHSCORE_FILE "msnake_scores.dat"
+#define HIGHSCORE_FILE "/.msnake/highscores.dat"
+
+char* user_home;
+char* hscore_file_path;
+size_t hscore_path_len;
+char* hscore_file;
 
 int calculate_score(int points, long time_sec);
 HIGHSCORE *read_highscore(int *num);

@@ -9,6 +9,14 @@ int calculate_score(int points, long time_sec) {
 
 // read the highscore file
 HIGHSCORE *read_highscore(int *num) {
+  // get highscore file
+  user_home = getenv("HOME");
+  hscore_file_path = HIGHSCORE_FILE;
+  hscore_path_len = strlen(user_home) + strlen(hscore_file_path) + 1;
+  hscore_file = malloc(hscore_path_len);
+  strcpy(hscore_file, user_home);
+  strcat(hscore_file, hscore_file_path);
+  
   // static pointer to an array of highscore records
   static HIGHSCORE *ptr = NULL;
   // the highscore file handle
@@ -24,7 +32,7 @@ HIGHSCORE *read_highscore(int *num) {
   }
 
   // open the highscore file
-  if((hs_file = fopen(HIGHSCORE_FILE, "r")) == NULL) {
+  if((hs_file = fopen(hscore_file, "r")) == NULL) {
     return NULL;
   }
 
@@ -83,7 +91,7 @@ int add_highscore(char *name, int points, int time_sec) {
   highscore.highscore = calculate_score(points, time_sec);
 
   // open the highscore file in append mode
-  if((hs_file = fopen(HIGHSCORE_FILE, "a")) == NULL) {
+  if((hs_file = fopen(hscore_file, "a")) == NULL) {
     return 1;
   }
   // append a structure to the file
@@ -97,7 +105,7 @@ int add_highscore(char *name, int points, int time_sec) {
 void clear_highscore() {
   FILE *hs_file = NULL;
   // open the file in write mode
-  if((hs_file = fopen(HIGHSCORE_FILE, "w")) != NULL) {
+  if((hs_file = fopen(hscore_file, "w")) != NULL) {
     fclose(hs_file);
   }
 }
