@@ -30,7 +30,9 @@ If you don't have git installed you can download a zip-file of the repository an
 
 Change into the Git-Repository (or the folder where you extracted the zip file) and enter the following commands to compile the game:
 
-    $ cmake .
+    $ mkdir build # you can name the build directory how you want
+    $ cd build
+    $ cmake ..
     $ make
 
 After you've compiled the game you can execute the file `bin/msnake` to run the game.

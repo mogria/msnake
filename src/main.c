@@ -39,7 +39,9 @@ void main_menu() {
       display_help();
     } else if(selected_menu_entry == 5) {
       // clear highscores
-      clear_highscore();
+      if(clear_score_dialog() == 1) {
+          clear_highscore();
+      }
     }
     // leave if the menu entry "exit" is chosen
   } while(selected_menu_entry != 6);
