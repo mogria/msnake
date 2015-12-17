@@ -5,10 +5,6 @@ script:
     - cmake ..
     - make
 
-install:
-    - cd build
-    - make install
-        
 compiler:
     - clang
     - gcc
