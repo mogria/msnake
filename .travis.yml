@@ -1,5 +1,14 @@
 language: c
-script: cmake
+script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+
+install:
+    - cd build
+    - make install
+        
 compiler:
     - clang
     - gcc
