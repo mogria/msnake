@@ -98,3 +98,8 @@ This list contains stuff we want to implement or change.
 * Better documentation of the source code
 * Optimize Code
   * The snake moves are inefficient, every part is moved, we should better move/copy the last part to the new position (this makes the game very slow if you have a long snake)
+* Improve color coding
+
+## Some ideas for the future
+* Make different difficulty mode with different speeds and amount of fruits. Also provide a "free"/"classic" mode which is the current game mode.
+* Make levels? and quests?
