@@ -100,7 +100,8 @@ void grow_fruit(GAME* game) {
 void get_fruit(FRUIT *fruit, int posy, int posx) {
   // how the diffrent fruits are displayed
   static char chars[EFFECTS] = {'x', '@', '%', '&'};
-  // the diffrent effects of the fruits
+  static int colors[EFFECTS] = { 4 ,  6 ,  3 ,  5 }; // see color definitions in the end of main.c
+  // the different effects of the fruits
   static void (*effects[EFFECTS])(GAME *) = {
     normal_effect, // see effects.c
     double_grow,
@@ -129,6 +130,8 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
   fruit->win = newwin(1, 1, posy, posx);
   // assign the effect
   fruit->effect = effects[i];
+  // set the color and brightness
+  wattron(fruit->win, (A_BOLD | COLOR_PAIR(colors[i]) ) );
   // print the char on the window
   wprintw(fruit->win, "%c", chars[i]);
   // show the fruit
