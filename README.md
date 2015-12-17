@@ -10,6 +10,8 @@ A simple snake game written in C using the ncurses library.
 **Co-Author:**  Timo Furrer <timo.furrer@gmail.com><br />
 **License:** MIT (see `LICENSE`)
 
+**Travis-CI build:** [![Build Status](https://travis-ci.org/mogria/msnake.svg)](https://travis-ci.org/mogria/msnake)
+
 * * *
 
 # How to install
