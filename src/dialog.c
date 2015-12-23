@@ -138,11 +138,12 @@ int display_menu() {
   "%i) Highscores",
   "%i) Controls",
   "%i) Help",
+  "%i) Clear Highscores",
   "%i) Exit"
   };
   
   // create a numbered dialog
-  return create_numbered_dialog("MENU", (char *)menu, 5);
+  return create_numbered_dialog("MENU", (char *)menu, 6);
 }
 
 // displays the controls dialog
@@ -190,6 +191,18 @@ void display_help() {
 
   // create the dialog
   create_enter_dialog("HELP", (const char *)help, 15);
+}
+
+// display a mesage to the user that the highscore has been cleared
+int clear_score_dialog() {
+  // the contents of the dialog
+  char text[][CONTENT_WIDTH] = {
+  "%i) Delete all the saved scores.",
+  "%i) No. Don't delete them.", 
+  };
+
+  // create the dialog
+  return create_numbered_dialog("CLEAR SCORES?", (char *)text, 2);
 }
 
 // displays the pause dialog

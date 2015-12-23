@@ -10,6 +10,8 @@ A simple snake game written in C using the ncurses library.
 **Co-Author:**  Timo Furrer <timo.furrer@gmail.com><br />
 **License:** MIT (see `LICENSE`)
 
+**Travis-CI build:** [![Build Status](https://travis-ci.org/mogria/msnake.svg)](https://travis-ci.org/mogria/msnake)
+
 * * *
 
 # How to install
@@ -30,7 +32,9 @@ If you don't have git installed you can download a zip-file of the repository an
 
 Change into the Git-Repository (or the folder where you extracted the zip file) and enter the following commands to compile the game:
 
-    $ cmake .
+    $ mkdir build # you can name the build directory how you want
+    $ cd build
+    $ cmake ..
     $ make
 
 After you've compiled the game you can execute the file `bin/msnake` to run the game.
@@ -87,12 +91,15 @@ To contribute to this awesome project, you can visit the repo on [GitHub](http:/
 
 This list contains stuff we want to implement or change.
 
-* don't create the highscore file at the current directory (in $HOME/.msnake/highscores.dat ?)
 * add a scroll function to the highscore? or delete low entries?
-* add a possibility to clear the highscore (function already written to clear the highscore, but called nowhere)
 * A Settings Menu
 * More food with diffrent effects?
   * a fruit which changes the direction of the snake? (or a key?)
 * Better documentation of the source code
 * Optimize Code
   * The snake moves are inefficient, every part is moved, we should better move/copy the last part to the new position (this makes the game very slow if you have a long snake)
+* Improve color coding
+
+## Some ideas for the future
+* Make different difficulty mode with different speeds and amount of fruits. Also provide a "free"/"classic" mode which is the current game mode.
+* Make levels? and quests?

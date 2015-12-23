@@ -15,7 +15,7 @@ void normal_effect(GAME *game) {
 }
 
 // ---- double grow ----
-// char: '@
+// char: '@'
 // grow by 1
 // increase highscore by 1
 // grow 2 new fruit
@@ -35,12 +35,12 @@ void mega_food(GAME *game) {
   game->highscore += 9;
 }
 
-// ---- eat_boost ----
+// ---- eat boost ----
 // char '&'
 // grow by 1
 // increase highscore by 1
 // grow 1 new fruit
-// SPECIAL: the range the snake eats food increases by 1
+// SPECIAL: the range the snake eats food increases by 1 temporarily
 void eat_boost(GAME *game) {
   normal_effect(game);
   game->snake.eat_range++;
