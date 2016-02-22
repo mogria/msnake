@@ -13,4 +13,4 @@ usr/*
 *.deb
 msnake_scores.dat
 packaging
-build
+build*
