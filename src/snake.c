@@ -1,3 +1,6 @@
+#include <SDL/SDL.h>
+#include <oaml.h>
+
 #include "snake.h"
 #include "events.h"
 
@@ -161,6 +164,10 @@ int move_snake(GAME *game) {
 
     // redraw the snake on the screen
     redraw_snake(&game->snake);
+  } else {
+    SDL_LockAudio();
+    oamlPlaySfx("lose");
+    SDL_UnlockAudio();
   }
   return success;
 }

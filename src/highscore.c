@@ -11,15 +11,10 @@ char* hscore_file_path;
 size_t hscore_path_len;
 char* hscore_file;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 int msnake_mkdir(char * dirname) {
     return _mkdir(dirname);
-}
-#elif __MINGW32__
-#include <direct.h>
-int msnake_mkdir(char * dirname) {
-    return mkdir(dirname);
 }
 #else
 #include <sys/types.h>

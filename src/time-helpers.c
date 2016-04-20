@@ -18,7 +18,7 @@ long long timeval_diff(struct timespec* tv1, struct timespec* tv2) {
   return diff;
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32 
 // windows implementation of clock_gettime: Carl Staelin (http://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows)
 // a little helper function for the windows implementation
 LARGE_INTEGER getFILETIMEoffset() {
@@ -92,7 +92,7 @@ void current_utc_time(struct timespec *ts) {
   mach_port_deallocate(mach_task_self(), cclock);
   ts->tv_sec = mts.tv_sec;
   ts->tv_nsec = mts.tv_nsec;
-#elif _MSC_VER
+#elif _WIN32
   struct timeval tv;
   clock_gettime(CLOCK_REALTIME, &tv);
   ts->tv_sec = tv.tv_sec;

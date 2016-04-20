@@ -12,7 +12,7 @@
 #endif
 
 // windows?
-#ifdef _MSC_VER
+#ifdef _WIN32
 // we need windows.h to implement clock_gettime on windows
 #include <windows.h>
 

@@ -1,3 +1,6 @@
+#include <SDL/SDL.h>
+#include <oaml.h>
+
 #include "effects.h"
 #include "fruits.h"
 
@@ -12,6 +15,12 @@ void normal_effect(GAME *game) {
   grow_fruit(game);
   game->snake.grow++;
   game->highscore++;
+
+  int x, y;
+  getbegyx(game->snake.parts[0], y, x);
+  SDL_LockAudio();
+  oamlPlaySfx2d("eat", x, y, game->columns, game->rows);
+  SDL_UnlockAudio();
 }
 
 // ---- double grow ----
