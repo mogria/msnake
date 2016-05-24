@@ -1,4 +1,3 @@
-#include <SDL/SDL.h>
 #include <oaml.h>
 
 #include "main.h"
@@ -6,40 +5,12 @@
 #include "highscore.h"
 #include "game.h"
 
-void audioCallback(void* userdata, Uint8* stream, int len) {
-  oamlMixToBuffer(stream, len/2);
-}
-
-int open_sdl() {
-  SDL_AudioSpec spec;
-
-  if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-    fprintf(stderr, "Could not initialize SDL.\n");
-    return -1;
-  }
-
-  SDL_memset(&spec, 0, sizeof(spec));
-  spec.freq = 44100;
-  spec.format = AUDIO_S16;
-  spec.channels = 2;
-  spec.samples = 4096;
-  spec.callback = audioCallback;
-
-  if (SDL_OpenAudio(&spec, NULL) < 0) {
-    fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
-    return -1;
-  }
-
-  oamlSetAudioFormat(44100, 2, 2, false);
-
-  SDL_PauseAudio(0);
-
-  return 0;
-}
-
 int main() {
 
-  open_sdl();
+  if (oamlInitAudioDevice(44100, 2) != OAML_OK) {
+    fprintf(stderr, "Unable to open audio device!\n");
+    exit(1);
+  }
   oamlInit("oaml.defs");
 
   // for some better random numbers (and not always the same)

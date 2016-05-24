@@ -16,13 +16,6 @@ set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses)
 
 ##
-# Find SDL
-#
-set(SDL_BUILDING_LIBRARY true)
-find_package(SDL REQUIRED)
-set(LIBS ${LIBS} ${SDL_LIBRARY} SDLmain)
-
-##
 # Find VorbisFile lib
 #
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
