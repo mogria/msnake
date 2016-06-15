@@ -1,3 +1,5 @@
+#include <oaml.h>
+
 #include "status-display.h"
 #include "highscore.h"
 
@@ -31,5 +33,10 @@ void status_display(GAME *game) {
   wrefresh(win);
 
   // free the memory needed for the window
+  delwin(win);
+
+  win = newwin(1, 40, 0, 0);
+  wprintw(win,"%s", oamlGetPlayingInfo());
+  wrefresh(win);
   delwin(win);
 }

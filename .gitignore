@@ -1,4 +1,4 @@
-snake
+msnake
 *~
 *.sw*
 game.log
@@ -13,4 +13,3 @@ usr/*
 *.deb
 msnake_scores.dat
 packaging
-build

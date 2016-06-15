@@ -1,16 +1,14 @@
-# Mogria's Snake
+# Mogria's Snake (OAML version)
 
 A simple snake game written in C using the ncurses library.
 
-![msnake Screenshot](https://raw.github.com/mogria/msnake/master/screenshot.png)
+![msnake Screenshot](https://raw.github.com/marcelofg55/msnake_oaml/master/screenshot.png)
 
 * * *
 
 **Author:**  Mogria <m0gr14@gmail.com><br />
 **Co-Author:**  Timo Furrer <timo.furrer@gmail.com><br />
 **License:** MIT (see `LICENSE`)
-
-**Travis-CI build:** [![Build Status](https://travis-ci.org/mogria/msnake.svg)](https://travis-ci.org/mogria/msnake)
 
 * * *
 
@@ -20,7 +18,7 @@ A simple snake game written in C using the ncurses library.
 
 If you have git installed you can simply clone the repo using the following command.
 
-    $ git clone https://github.com/mogria/msnake.git
+    $ git clone https://github.com/marcelofg55/msnake_oaml.git
 
 The advantage of using git is you can update the downloaded code simply by entering:
 
@@ -90,7 +88,7 @@ And with the following command you can install it (You need root-privileges):
 
 # Contributing
 
-To contribute to this awesome project, you can visit the repo on [GitHub](http://github.com/mogria/msnake) and fork it and create your own branch. You can pick a task from the TODO list below (or simply do something else). If you finished your work, create a pull request on GitHub and we'll probably merge your stuff to our repository.
+To contribute to this awesome project, you can visit the repo on [GitHub](http://github.com/marcelofg55/msnake_oaml) and fork it and create your own branch. You can pick a task from the TODO list below (or simply do something else). If you finished your work, create a pull request on GitHub and we'll probably merge your stuff to our repository.
 
 # TODO
 

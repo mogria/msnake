@@ -1,3 +1,5 @@
+#include <oaml.h>
+
 #include "main.h"
 #include "dialog.h"
 #include "highscore.h"
@@ -5,13 +7,20 @@
 
 int main() {
 
+  if (oamlInitAudioDevice(44100, 2) != OAML_OK) {
+    fprintf(stderr, "Unable to open audio device!\n");
+    exit(1);
+  }
+  oamlInit("oaml.defs");
+
   // for some better random numbers (and not always the same)
   srand(time(NULL));
-  
+
   init_curses();
 
   main_menu();
 
+  oamlShutdown();
   end_curses();
 
   // free the allocated memory for the highscore
@@ -83,3 +92,4 @@ void set_colors() {
 void end_curses() {
   endwin();
 }
+
