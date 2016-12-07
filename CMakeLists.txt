@@ -17,4 +17,4 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     target_link_libraries(msnake rt)
 endif()
 
-install(TARGETS msnake DESTINATION /usr/local/bin)
+install(TARGETS msnake DESTINATION bin)
