@@ -62,7 +62,7 @@ If you are _not_ a debian-based distro and you can't compile the game, look for 
 ## Mac OS X
 
 To compile the game, you'll need to have cMake.
-To get cMake, go to [cMake.org](http;//www.cmake.org) and download and install the latest version. If the command `cmake` is a available in your Terminal you've installed cMake correctly.
+To get cMake, go to [cMake.org](http://www.cmake.org) and download and install the latest version. If the command `cmake` is a available in your Terminal you've installed cMake correctly.
 
 ## Windows (MinGW)
 
