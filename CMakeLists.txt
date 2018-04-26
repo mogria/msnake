@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(msnake)
 
-set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
 set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses)
