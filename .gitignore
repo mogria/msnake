@@ -14,3 +14,7 @@ usr/*
 msnake_scores.dat
 packaging
 build
+
+# CLion files
+.idea
+cmake-build-debug
