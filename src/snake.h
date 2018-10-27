@@ -1,5 +1,5 @@
-
-#ifndef _SNAKE_H
+#ifndef SNAKE_H
+#define SNAKE_H
 
 #include "types.h"
 
@@ -9,5 +9,4 @@ void grow_snake(SNAKE *snake, int posy, int posx);
 int move_snake(GAME *game);
 WINDOW *snake_part_is_on(SNAKE *snake, int posy, int posx);
 
-#define _SNAKE_H
-#endif /* _SNAKE_H */
+#endif /* SNAKE_H */

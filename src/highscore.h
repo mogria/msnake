@@ -1,5 +1,5 @@
-#ifndef _HIGHSCORE_H
-#define _HIGHSCORE_H
+#ifndef HIGHSCORE_H
+#define HIGHSCORE_H
 
 #include <stdio.h>
 #include "types.h"
@@ -12,4 +12,4 @@ HIGHSCORE *read_highscore(int *num);
 int add_highscore(char *name, int points, int time_sec);
 void clear_highscore();
 
-#endif /* _HIGHSCORE_H */
+#endif /* HIGHSCORE_H */

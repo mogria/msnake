@@ -1,5 +1,5 @@
-#ifndef _GLOG_H
-#define _GLOG_H
+#ifndef GLOG_H
+#define GLOG_H
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -11,4 +11,4 @@
 
 void glog(const char *format, ... );
 
-#endif /* _GLOG_H */
+#endif /* GLOG_H */

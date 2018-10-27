@@ -1,6 +1,5 @@
-
-#ifndef _EVENTS_H
-#define _EVENTS_H
+#ifndef EVENTS_H
+#define EVENTS_H
 
 #define EVENTS 3
 
@@ -17,4 +16,4 @@ int check_extended_border_collision(GAME* game, int cury, int curx);
 int check_self_collision(GAME* game, int cury, int curx);
 int check_self_collision_handler(GAME* game, int cury, int curx);
 
-#endif /* _EVENTS_H */
+#endif /* EVENTS_H */
