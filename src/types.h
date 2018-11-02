@@ -1,6 +1,5 @@
-
-#ifndef _TYPES_H
-#define _TYPES_H
+#ifndef TYPES_H
+#define TYPES_H
 
 #include <time.h>
 #include <curses.h>
@@ -53,7 +52,6 @@ typedef struct game {
   int columns;
 } GAME;
 
-
 // the maximum length of a name in the highscore
 #define HIGHSCORE_NAME_LENGTH 15
 
@@ -67,4 +65,4 @@ typedef struct highscore {
 // we probably need some logging functionality
 #include "glog.h"
 
-#endif /* _TYPES_H */
+#endif /* TYPES_H */

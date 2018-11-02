@@ -1,5 +1,5 @@
-#ifndef _DIALOG_H
-#define _DIALOG_H
+#ifndef DIALOG_H
+#define DIALOG_H
 #include "types.h"
 #include <curses.h>
 
@@ -19,4 +19,4 @@ int pause_dialog();
 int clear_score_dialog();
 void enter_string(char *title, char *content, int lines, int posy, int posx, char *buf, int length);
 
-#endif /* _DIALOG_H */
+#endif /* DIALOG_H */

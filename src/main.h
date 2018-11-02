@@ -1,5 +1,5 @@
-#ifndef _MAIN_H
-#define _MAIN_H
+#ifndef MAIN_H
+#define MAIN_H
 #include <stdlib.h>
 #include "types.h"
 
@@ -10,4 +10,4 @@ void main_menu();
 
 void set_colors();
 
-#endif /* _MAIN_H */
+#endif /* MAIN_H */

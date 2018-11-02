@@ -1,6 +1,5 @@
-
-#ifndef _GAME_H
-#define _GAME_H
+#ifndef GAME_H
+#define GAME_H
 
 #include "types.h"
 #include <time.h>
@@ -13,4 +12,4 @@ void kill_game(GAME *game);
 void display_highscore();
 void run();
 
-#endif /* _GAME_H */
+#endif /* GAME_H */

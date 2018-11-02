@@ -1,5 +1,5 @@
-#ifndef _FRUITS_H
-#define _FRUITS_H
+#ifndef FRUITS_H
+#define FRUITS_H
 
 #include "types.h"
 #include <stdlib.h>
@@ -13,4 +13,4 @@ FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx);
 void grow_fruit(GAME* game);
 void get_fruit(FRUIT *fruit, int posy, int posx);
 
-#endif /* _FRUITS_H */
+#endif /* FRUITS_H */
