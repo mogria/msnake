@@ -3,14 +3,19 @@
 #include "events.h"
 #include "snake.h"
 
+// prints the fruit character
+static inline void
+draw_fruit(FRUIT *fruit)
+{
+  POINT *point = &fruit->point;
+  // set the color and brightness
+  attron(A_BOLD | COLOR_PAIR(fruit->color));
+  // print the char on the main window
+  mvprintw(point->y, point->x, "%c", point->ch);
+}
+
 // free the resources needed by the fruits
 void kill_fruits(FRUITS* fruits) {
-  int i;
-
-  // iterate throgh each fruit and delete the window
-  for(i = 0; i < fruits->length; i++) {
-    delwin(fruits->fruits[i].win);
-  }
   // reset the length
   fruits->length = 0;
   // free the allocated memory
@@ -46,23 +51,20 @@ void kill_fruit_at_pos(FRUITS *fruits, int i) {
   for(i++; i < fruits->length; i++) {
     fruits->fruits[i-1] = fruits->fruits[i];
   }
-
-  // realloc lessmemory
-  fruits->fruits = realloc(fruits->fruits, --fruits->length * sizeof(FRUIT));
 }
 
 
 // returns a FRUIT if one is found on the given point, else NULL
 FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx) {
+  POINT *point;
   int i;
-  int y,x;
 
   // iterate each fruit
   for(i = 0; i < fruits->length; i++) {
     // read the position of the current fruit
-    getbegyx(fruits->fruits[i].win, y, x);
+    point = &fruits->fruits[i].point;
     // check if the positions are matching
-    if(posy == y && posx == x) {
+    if(point->y == posy && point->x == posx) {
       // return a pointer to the current fruit
       return &fruits->fruits[i];
     }
@@ -83,12 +85,14 @@ void grow_fruit(GAME* game) {
   // increase the length
   game->fruits.length++;
   // allocate memory for the new fruit
-  if(game->fruits.length == 0) {
+  if(game->fruits.allocated == 0) {
     // initialize the array with malloc if it is the first fruit in the array
     game->fruits.fruits = malloc(sizeof(FRUIT) * game->fruits.length);
-  } else {
+    game->fruits.allocated = game->fruits.length;
+  } else if(game->fruits.allocated < game->fruits.length) {
     // allocate more memory
-    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * game->fruits.length);
+	game->fruits.allocated *= 2;
+    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * game->fruits.allocated);
   }
   
   // get a filled struct (containing the displayed char, the effect & co.) of the new fruit
@@ -126,16 +130,17 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
     i++; // next index
   };
 
-  // create a new window
-  fruit->win = newwin(1, 1, posy, posx);
-  // assign the effect
+  // create a new point
+  fruit->point.x = posx;
+  fruit->point.y = posy;
+  fruit->point.ch = chars[i];
+  // save a color
+  fruit->color = colors[i];
+  // set an effect
   fruit->effect = effects[i];
-  // set the color and brightness
-  wattron(fruit->win, (A_BOLD | COLOR_PAIR(colors[i]) ) );
-  // print the char on the window
-  wprintw(fruit->win, "%c", chars[i]);
-  // show the fruit
-  wrefresh(fruit->win);
+
+  // draw the fruit
+  draw_fruit(fruit);
 }
 
 // redraw all the fruits on the screen
@@ -145,7 +150,6 @@ void redraw_fruits(FRUITS *fruits) {
   // iterate through each fruit.
   for(i = 0; i < fruits->length; i++) {
     // redraw it!
-    redrawwin(fruits->fruits[i].win);
-    wrefresh(fruits->fruits[i].win);
+	draw_fruit(&fruits->fruits[i]);
   }
 }

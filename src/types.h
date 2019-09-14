@@ -18,9 +18,17 @@ typedef enum {
 // delcare a game struct
 struct game;
 
+// represent a point on the screen
+typedef struct point {
+  int x; // the point x position
+  int y; // the point y position
+  char ch; // the point character
+} POINT;
+
 // represents a single fruit
 typedef struct fruit {
-  WINDOW *win;
+  POINT point;
+  int color;
   // the callback function which will be called if the snake hits this fruit
   void (*effect)(struct game*);
 } FRUIT;
@@ -29,12 +37,14 @@ typedef struct fruit {
 typedef struct fruits {
   FRUIT* fruits; // dynamic array of fruits
   int length; // the length of the dynamic array
+  int allocated; // the length of allocated fruits
 } FRUITS;
 
 // the snake
 typedef struct snake {
-  WINDOW** parts; // dynamic array of window pointers
+  POINT* parts; // dynamic array of window pointers
   int length; // length of the dynamic array
+  int allocated; // length of the allocated parts
   direction dir; // the direction of the snake
   int grow; // the number of times the snake has to grow 
   int eat_range;

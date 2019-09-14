@@ -31,4 +31,6 @@ struct timespec {
 
 long long timeval_diff(struct timespec* tv1, struct timespec* tv2);
 void current_utc_time(struct timespec *ts);
+void sleep_us(unsigned int time);
+
 #endif /* TIME_HELPERS_H */

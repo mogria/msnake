@@ -16,20 +16,12 @@
 void status_display(GAME *game) {
   const int width = 25; // the width in chars of the display
 
-  // create a new window in the top right corner with a height of 1
-  // and a width of 'width'
-  WINDOW *win = newwin(1, width, 0, game->columns - width);
-
+  // set the color and brightness
+  attron(COLOR_PAIR(7));
   // print out the current length, the points, the time and the current highscore
-  wprintw(win,"%03iL-%05iP-%04is-%04iSCR",
+  mvprintw(0, game->columns - width, "%03iL-%05iP-%04is-%04iSCR",
       game->snake.length,
       game->highscore,
       time(NULL) - game->started - game->paused,
       calculate_score(game->highscore, time(NULL) - game->started - game->paused));
-
-  // display it
-  wrefresh(win);
-
-  // free the memory needed for the window
-  delwin(win);
 }

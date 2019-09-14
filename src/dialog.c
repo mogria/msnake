@@ -256,19 +256,26 @@ void show_highscores() {
   free(highscore_table);
 }
 
-void enter_string(char *title, char *content, int lines, int posy, int posx, char *buf, int length) {
+void enter_string(char *title, char *content, int posy, int posx, char *buf, int length) {
   WINDOW *win = create_dialog_window(title);
   int i;
-  int pos = 0;
+  int pos;
   int ch = 0;
 
-  //print out the content
-  for(i = 0; i < lines; i++) {
-    mvwprintw(win, i + 3, 1, "%s", &content[i * CONTENT_WIDTH]);
+  i = 0;
+  pos = 0;
+  // print lines while exist
+  while (content[pos] != '\0')
+  {
+    mvwprintw(win, i + 3, 1, "%s", content + pos);
+    // find begin of a next line
+    while (content[pos++] != '\0');
+    i++;
   }
 
   // - let the user input a string
-  // read a char until we receive a line break 
+  // read a char until we receive a line break
+  pos = 0;
   while((ch = mvwgetch(win, posy, posx + pos)) && ch != '\n') {
     // prevent a buffer overflow
     if(ch == KEY_BACKSPACE || ch == 127) {
@@ -306,21 +313,30 @@ void enter_string(char *title, char *content, int lines, int posy, int posx, cha
 
 // displays the highscore dialog
 void display_highscore(GAME *game, char *buf, int length) {
-  int lines = 6;
+  int lines = 7;
   // allocate enougth memory
-  char *content = calloc(lines * CONTENT_WIDTH, sizeof(char));
+  char *content = calloc(lines * (CONTENT_STR_WIDTH), sizeof(char));
 
   // generate the window contents
-  snprintf(content                    , CONTENT_WIDTH, "snake length : %i", game->snake.length);
-  snprintf(content + CONTENT_WIDTH    , CONTENT_WIDTH, "points       : %i", game->highscore);
-  snprintf(content + CONTENT_WIDTH * 2, CONTENT_WIDTH, "time         : %lis", game->ended - game->started - game->paused);
-  snprintf(content + CONTENT_WIDTH * 3, CONTENT_WIDTH, "highscore    : %i", calculate_score(game->highscore, game->ended - game->started - game->paused));
-  snprintf(content + CONTENT_WIDTH * 4, CONTENT_WIDTH, "----------------------------------------");
-  snprintf(content + CONTENT_WIDTH * 5, CONTENT_WIDTH, "enter your name to be added to the highscore");
-  snprintf(content + CONTENT_WIDTH * 5, CONTENT_WIDTH, "Name: ");
+  snprintf(content, CONTENT_STR_WIDTH * lines,
+          "snake length : %i%c"
+          "points       : %i%c"
+          "time         : %lis%c"
+          "highscore    : %i%c"
+          "--------------------------------------------%c"
+          "enter your name to be added to the highscore%c"
+          "Name:",
+          game->snake.length, '\0',
+          game->highscore, '\0',
+          game->ended - game->started - game->paused, '\0',
+          calculate_score(game->highscore, game->ended - game->started - game->paused), '\0',
+          '\0',
+          '\0');
 
+  curs_set(true);
   // show the dialog
-  enter_string("GAME OVER", content, lines, 8, 7, buf, length);
+  enter_string("GAME OVER", content, 9, 7, buf, length);
+  curs_set(false);
 
   // free the memory
   free(content);
