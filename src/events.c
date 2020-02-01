@@ -41,10 +41,6 @@ int check_fruit_collision_handler(GAME* game, int cury, int curx) {
     // execute the effect of the fruit
     fruit->effect(game);
 
-    WINDOW *win = newwin(1, 1, cury, curx);
-    wprintw(win, " ");
-    wrefresh(win);
-    delwin(win);
     // remove the fruit from the game
     kill_fruit_by_ptr(&game->fruits, fruit);
   }
@@ -98,10 +94,15 @@ int check_border_collision_handler(GAME* game, int cury, int curx) {
 // check if the snake is colliding on it's self
 // we only need to check if the snake head is colliding
 int check_self_collision(GAME* game, int cury, int curx) {
-  WINDOW* on;
+  POINT* on;
   // check if the position of the snake head is matching with the position of a snake part
-  // exept for the last part (because it will move
-  return !((on = snake_part_is_on(&game->snake, cury, curx)) == NULL || on == game->snake.parts[game->snake.length - 1]);
+  on = snake_part_is_on(&game->snake, cury, curx);
+  if (on == NULL)
+    return 0;
+  // except for the last part (because it will move)
+  if (on == &game->snake.parts[game->snake.length])
+	  return 0;
+  return 1;
 }
 
 // ends the game if a collision is present

@@ -8,6 +8,13 @@
 #include "status-display.h"
 #include "time-helpers.h"
 
+// nanoseconds to microseconds conversion
+#define NS_TO_US(interval) ((interval) / 1000)
+// milliseconds to nanoseconds conversion
+#define MS_TO_NS(ms) ((ms) * 1000000)
+// an initialization number of fruits
+#define FRUITS_INIT_NUMBER (50)
+
 // end the game, free the resources
 void kill_game(GAME *game) {
   kill_fruits(&game->fruits);
@@ -20,15 +27,17 @@ void run() {
   // some variables for the timer (inclusive the interval)
   struct timespec last_time              = {};
   struct timespec current_time           = {};
-  long long default_interval             = 100000000; // 100 ms
+  long long default_interval             = MS_TO_NS(100);
   long long interval                     = default_interval;
   long long res;
+  unsigned int delay_us;
   char playername[HIGHSCORE_NAME_LENGTH] = {};
 
   int range_counter = 0;
 
   // create the game struct
   GAME game = {};
+  memset(&game, 0, sizeof(GAME));
 
   // set the eat range to 1
   game.snake.eat_range = 1;
@@ -54,7 +63,9 @@ void run() {
 
   // create some fruits on the screen
   // NOM, NOM, NOM
-  for(i = 0; i < 50; i++) {
+  game.fruits.allocated = FRUITS_INIT_NUMBER;
+  game.fruits.fruits = malloc(sizeof(FRUIT) * FRUITS_INIT_NUMBER);
+  for(i = 0; i < FRUITS_INIT_NUMBER; i++) {
     grow_fruit(&game);
   }
   
@@ -110,14 +121,20 @@ void run() {
       // move the snake
       success = move_snake(&game);
 
-      // refresh the screen
-      refresh();
-
       // display the status bar (top-right)
       status_display(&game);
 
+      // update main window after changes
+      refresh();
+
       // update the time when we last moved the snake
       last_time = current_time;
+
+      delay_us = NS_TO_US(interval);
+    }
+    else
+    {
+      delay_us = NS_TO_US(interval - res);
     }
     
     getmaxyx(stdscr, current_rows, current_columns);
@@ -135,6 +152,7 @@ void run() {
         case 2:
           // leave the game if '2' is pressed
           success = 0;
+          break;
         default:
           // redraw the screen on resume
           game.paused += time(NULL) - pause_start;
@@ -142,6 +160,8 @@ void run() {
           break;
       }
     }
+
+    sleep_us(delay_us);
   }
 
   // get the time when the game has ended
@@ -177,12 +197,13 @@ void redraw_game(GAME *game) {
   // redraw the main window (containg the border and stuff)
   clear();
   draw_border(game);
-  redrawwin(stdscr);
-  refresh();
   
   // redraw the fruits
   redraw_fruits(&game->fruits);
 
   // redraw the snake
   redraw_snake(&game->snake);
+
+  redrawwin(stdscr);
+  refresh();
 }

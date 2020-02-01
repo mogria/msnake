@@ -1,3 +1,9 @@
+#ifndef _WIN32
+
+#include <unistd.h>
+
+#endif
+
 #include "time-helpers.h"
 
 // calculate the difference between two timespec structs
@@ -99,5 +105,22 @@ void current_utc_time(struct timespec *ts) {
   ts->tv_nsec = tv.tv_usec * 1000;
 #else /* LINUX */
   clock_gettime(CLOCK_REALTIME, ts);
+#endif
+}
+
+// suspend execution for microsecond intervals
+void sleep_us(unsigned int time) {
+#ifdef _WIN32
+  HANDLE timer;
+  LARGE_INTEGER ft;
+  // Convert to 100 nanosecond interval, negative value indicates relative time
+  ft.QuadPart = -(10 * time);
+
+  timer = CreateWaitableTimer(NULL, TRUE, NULL);
+  SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+  WaitForSingleObject(timer, INFINITE);
+  CloseHandle(timer);
+#else
+  usleep(time);
 #endif
 }

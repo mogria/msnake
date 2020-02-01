@@ -67,6 +67,8 @@ void init_curses() {
   set_colors();
   // also grab keys like F1 etc.
   keypad(stdscr, TRUE);
+  // don't show cursor by default
+  curs_set(false);
 }
 
 void set_colors() {
