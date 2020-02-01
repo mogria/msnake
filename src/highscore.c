@@ -119,6 +119,8 @@ HIGHSCORE *read_highscore(int *num) {
     }
   } while (swapped);
 
+  fclose(hs_file);
+
   // return the array
   return ptr;
 }
