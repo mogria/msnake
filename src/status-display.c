@@ -19,7 +19,7 @@ void status_display(GAME *game) {
   // set the color and brightness
   attron(COLOR_PAIR(7));
   // print out the current length, the points, the time and the current highscore
-  mvprintw(0, game->columns - width, "%03iL-%05iP-%04is-%04iSCR",
+  mvprintw(0, game->columns - width, "%03iL|%05iP|%04is|%04iSCR",
       game->snake.length,
       game->highscore,
       time(NULL) - game->started - game->paused,
