@@ -15,9 +15,9 @@ int check_fruit_collision(GAME* game, int cury, int curx) {
   int x,y;
 
   int on = 0; // check if there is food in the calculated range
-  // iterate througth every field inside the range
-  for(x = startx; x  < endx; x++) {
-    for(y = starty; y  < endy; y++) {
+  // iterate through every field inside the range
+  for(x = startx; x < endx; x++) {
+    for(y = starty; y < endy; y++) {
       // is a fruit on the current field?
       if(fruit_is_on(&game->fruits, y, x) != NULL) {
         // exclude the field in the middle
@@ -31,7 +31,7 @@ int check_fruit_collision(GAME* game, int cury, int curx) {
   }
   return on;
 }
- 
+
 // calls the effect of the fruit
 int check_fruit_collision_handler(GAME* game, int cury, int curx) {
   // the the fruit by the given position

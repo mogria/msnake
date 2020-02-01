@@ -82,7 +82,6 @@ void grow_fruit(GAME* game) {
     // is nothing else there in the generated position?
   } while (snake_part_is_on(&game->snake, randy, randx) != NULL || fruit_is_on(&game->fruits, randy, randx) != NULL || check_extended_border_collision(game, randy, randx));
 
-  // increase the length
   game->fruits.length++;
   // allocate memory for the new fruit
   if(game->fruits.allocated == 0) {
@@ -91,10 +90,10 @@ void grow_fruit(GAME* game) {
     game->fruits.allocated = game->fruits.length;
   } else if(game->fruits.allocated < game->fruits.length) {
     // allocate more memory
-	game->fruits.allocated *= 2;
+    game->fruits.allocated *= 2;
     game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * game->fruits.allocated);
   }
-  
+
   // get a filled struct (containing the displayed char, the effect & co.) of the new fruit
   get_fruit(&game->fruits.fruits[game->fruits.length - 1], randy, randx);
 }
@@ -150,6 +149,6 @@ void redraw_fruits(FRUITS *fruits) {
   // iterate through each fruit.
   for(i = 0; i < fruits->length; i++) {
     // redraw it!
-	draw_fruit(&fruits->fruits[i]);
+    draw_fruit(&fruits->fruits[i]);
   }
 }

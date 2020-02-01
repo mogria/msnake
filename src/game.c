@@ -68,7 +68,7 @@ void run() {
   for(i = 0; i < FRUITS_INIT_NUMBER; i++) {
     grow_fruit(&game);
   }
-  
+
   // get the time when the game started
   time(&game.started);
   // get the current time
@@ -136,7 +136,7 @@ void run() {
     {
       delay_us = NS_TO_US(interval - res);
     }
-    
+
     getmaxyx(stdscr, current_rows, current_columns);
     // 'p' pressed || size of the terminal changed
     if(ich == 'p' || (current_rows != game.rows || current_columns != game.columns)) {
@@ -203,7 +203,6 @@ void redraw_game(GAME *game) {
 
   // redraw the snake
   redraw_snake(&game->snake);
-
   redrawwin(stdscr);
   refresh();
 }
