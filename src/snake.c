@@ -1,6 +1,13 @@
 #include "snake.h"
 #include "events.h"
 
+void init_snake(SNAKE* snake, int posy, int posx) {
+  snake->allocated = 0;
+  snake->length = 0;
+  snake->dir = DIR_LEFT;
+  grow_snake(snake, posy, posx);
+}
+
 // prints the snake part character
 static inline void
 draw_part(POINT *part)
@@ -45,11 +52,11 @@ void grow_snake(SNAKE *snake, int posy, int posx) {
     snake->parts = malloc(sizeof(POINT) * snake->length);
     snake->allocated = snake->length;
   } else if(snake->allocated < snake->length) {
-	// increase the amount of allocated memory
+    // increase the amount of allocated memory
     snake->allocated *= 2;
     snake->parts = realloc(snake->parts, sizeof(POINT) * snake->allocated);
   }
-  
+
   // create a new point
   point = &snake->parts[snake->length - 1];
   point->x = posx;
@@ -113,7 +120,7 @@ int move_snake(GAME *game) {
   newy = newy < 0 ? game->rows + newy : newy;
   newx = newx < 0 ? game->columns + newx : newx;
 
-  // check for collisons and execute the handlers if a collision occured
+  // check for collisions and execute the handlers if a collision occurred
   for(i = 0; i < EVENTS && success; i++) {
     // collision?
     if((collision_checks[i](game, newy, newx))) {

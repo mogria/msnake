@@ -12,8 +12,34 @@
 #define NS_TO_US(interval) ((interval) / 1000)
 // milliseconds to nanoseconds conversion
 #define MS_TO_NS(ms) ((ms) * 1000000)
-// an initialization number of fruits
-#define FRUITS_INIT_NUMBER (50)
+
+void init_game(GAME *game) {
+  memset(game, 0, sizeof(GAME));
+
+  // set the eat range to 1
+  game->snake.eat_range = 1;
+
+  // get the dimensions of the terminal and store them in the GAME struct
+  getmaxyx(stdscr, game->rows, game->columns);
+
+  // clear the whole screen
+  clear();
+
+  // draw the walls
+  draw_border(game);
+
+  // show the newly created walls
+  refresh();
+
+  // place the snake in the middle of the game field
+  init_snake(&game->snake, game->rows / 2, game->columns / 2);
+
+  // create some fruits on the screen
+  grow_fruits(&game, 
+
+  // get the time when the game started
+  time(&game->started);
+}
 
 // end the game, free the resources
 void kill_game(GAME *game) {
@@ -22,7 +48,7 @@ void kill_game(GAME *game) {
 }
 
 void run() {
-  int ch = 0, ich, i, current_columns, current_rows, success = 1;
+  int ch = 0, ich, current_columns, current_rows, success = 1;
 
   // some variables for the timer (inclusive the interval)
   struct timespec last_time              = {};
@@ -37,37 +63,11 @@ void run() {
 
   // create the game struct
   GAME game = {};
-  memset(&game, 0, sizeof(GAME));
-
-  // set the eat range to 1
-  game.snake.eat_range = 1;
+  init_game(&game);
 
   // helper variable to keep track of how long we've paused
   time_t pause_start;
 
-  // get the dimensions of the terminal and store them in the GAME struct
-  getmaxyx(stdscr, game.rows, game.columns);
-
-  // clear the whole screen
-  clear();
-
-  // draw the walls
-  draw_border(&game);
-
-  // show the newly created walls
-  refresh();
-
-  // place the snake in the middle of the game field
-  grow_snake(&game.snake, game.rows / 2, game.columns / 2);
-  game.snake.dir = DIR_LEFT;
-
-  // create some fruits on the screen
-  for(i = 0; i < FRUITS_INIT_NUMBER; i++) {
-    grow_fruit(&game);
-  }
-
-  // get the time when the game started
-  time(&game.started);
   // get the current time
   current_utc_time(&last_time);
 
@@ -135,12 +135,10 @@ void run() {
     }
 
     getmaxyx(stdscr, current_rows, current_columns);
-    // 'p' pressed || size of the terminal changed
+    // 'p' pressed or size of the terminal changed (SIGWINCH)
     if(ich == 'p' || (current_rows != game.rows || current_columns != game.columns)) {
       // use the terminal new size
-      game.rows = current_rows;
-      game.columns = current_columns;
-      manage_fruit_memory(&game);
+      resize_game(&game, current_rows, current_columns);
 
       // get the time
       time(&pause_start);
@@ -177,14 +175,24 @@ void run() {
   kill_game(&game);
 }
 
+void resize_game(GAME *game, int newsizey, int newsizex) {
+  manage_fruit_memory(game, newsizey, newsizex);
+  game->rows = newsizey;
+  game->columns = newsizex;
+}
+
 void draw_border(GAME *game) {
   int x, y;
+
+  game->num_walls = 0;
+
   // create a border
   attron(A_BOLD | COLOR_PAIR(6));
   for(x = 0; x < game->columns; x++) {
     for(y = 0; y < game->rows; y++) {
       if(check_extended_border_collision(game, y, x)) {
         mvprintw(y, x, "#");
+        game->num_walls++;
       }
     }
   }
@@ -192,7 +200,7 @@ void draw_border(GAME *game) {
 
 // redraw the whole screen
 void redraw_game(GAME *game) {
-  // redraw the main window (containg the border and stuff)
+  // redraw the main window (containing the border and stuff)
   clear();
   draw_border(game);
 

@@ -36,7 +36,8 @@ typedef struct fruit {
 // represents a collection of fruit, which can be eaten by the snake
 typedef struct fruits {
   FRUIT* fruits; // dynamic array of fruits, allocated to be sorted by point
-  int allocated; // the length of allocated fruits
+  unsigned int allocated; // the length of allocated fruits
+  unsigned int used;
 } FRUITS;
 
 // the snake
@@ -59,6 +60,7 @@ typedef struct game {
   int highscore; // the number of points
   int rows;
   int columns;
+  unsigned int num_walls; // the number of wall elements
 } GAME;
 
 // the maximum length of a name in the highscore

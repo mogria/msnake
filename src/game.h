@@ -5,6 +5,8 @@
 #include <time.h>
 #include <signal.h>
 
+void init_game(GAME *game);
+void resize_game(GAME *game, int newsizey, int newsizex);
 void redraw_game(GAME *game);
 void draw_border(GAME *game);
 int pause_dialog();
