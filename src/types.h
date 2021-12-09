@@ -35,8 +35,7 @@ typedef struct fruit {
 
 // represents a collection of fruit, which can be eaten by the snake
 typedef struct fruits {
-  FRUIT* fruits; // dynamic array of fruits
-  int length; // the length of the dynamic array
+  FRUIT* fruits; // dynamic array of fruits, allocated to be sorted by point
   int allocated; // the length of allocated fruits
 } FRUITS;
 

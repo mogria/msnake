@@ -3,11 +3,13 @@
 #include "highscore.h"
 #include "game.h"
 
+#include <stdio.h>
+
 int main() {
 
   // for some better random numbers (and not always the same)
   srand(time(NULL));
-  
+
   init_curses();
 
   main_menu();
@@ -54,8 +56,14 @@ void init_curses() {
   // 1 second if escape is pressed. Disable this behaviour.
   setenv("ESCDELAY", "0", 1);
 #endif
-  
-  initscr();
+
+  WINDOW *stdscr_init = initscr();
+  if(stdscr_init != stdscr) {
+    endwin();
+    fprintf(stderr, "Could not initialize curses screen. Exiting now...");
+    exit(EXIT_FAILURE);
+  }
+
   // get more control over the input
   cbreak();
   // getch() returns ERR if no input is present and doesn't wait

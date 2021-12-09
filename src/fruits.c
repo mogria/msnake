@@ -3,11 +3,40 @@
 #include "events.h"
 #include "snake.h"
 
-// prints the fruit character
+#include <stdlib.h>
+
+// make sure to provide enough space to store
+// all fruits when all fields contain a fruit
+void manage_fruit_memory(GAME* game) {
+  size_t max_num_fruits_to_allocate = game->rows * game->columns;
+  if(game->fruits.allocated == 0) {
+    // initialize the array with malloc if it is the first fruit in the array
+    game->fruits.fruits = malloc(sizeof(FRUIT) * max_num_fruits_to_allocate);
+    bzero(game->fruits.fruits, sizeof(FRUIT) * max_num_fruits_to_allocate);
+  } else if(game->fruits.allocated != max_num_fruits_to_allocate) {
+    // allocate more memory
+    game->fruits.fruits = realloc(game->fruits.fruits, max_num_fruits_to_allocate);
+    size_t new_fruits = max_num_fruits_to_allocate - game->fruits.allocated;
+    bzero(&game->fruits.fruits[game->fruits.allocated],
+            sizeof(FRUIT) * new_fruits);
+  }
+  game->fruits.allocated = max_num_fruits_to_allocate;
+}
+
+FRUIT *get_fruit_addr(GAME* game, int y, int x) {
+  return &game->fruits.fruits[y * game->rows + x];
+}
+
 static inline void
 draw_fruit(FRUIT *fruit)
 {
   POINT *point = &fruit->point;
+  //clear space if not a fruit anymore
+  if(point->ch == '\0') {
+    mvprintw(point->y, point->x, " ");
+    return;
+  }
+
   // set the color and brightness
   attron(A_BOLD | COLOR_PAIR(fruit->color));
   // print the char on the main window
@@ -16,91 +45,65 @@ draw_fruit(FRUIT *fruit)
 
 // free the resources needed by the fruits
 void kill_fruits(FRUITS* fruits) {
-  // reset the length
-  fruits->length = 0;
   // free the allocated memory
   free(fruits->fruits);
 }
 
 // remove a single fruit from the game by it's position
-void kill_fruit(FRUITS *fruits, int posy, int posx) {
-  FRUIT *fruit;
-  // check if a fruit is on the given position
-  if((fruit = fruit_is_on(fruits, posy, posx)) != NULL) {
-    // remove the fruit
-    kill_fruit_by_ptr(fruits, fruit);
-  }
+void kill_fruit(FRUIT *fruit) {
+    bzero(fruit, sizeof(FRUIT));
+    draw_fruit(fruit);
 }
-  
-// remove a single fruit from the game
-void kill_fruit_by_ptr(FRUITS *fruits, FRUIT *fruit) {
-  int i;
-  // check if FRUIT is in the array of FRUITS
-  for(i = 0; i < fruits->length; i++) {
-    if(&fruits->fruits[i] == fruit) {
-      // remove the fruit
-      kill_fruit_at_pos(fruits, i);
-      break;
-    }
-  }
-}
-
-// remove a single fruit from the fruits array
-void kill_fruit_at_pos(FRUITS *fruits, int i) {
-  // move the frutis afterwards to front
-  for(i++; i < fruits->length; i++) {
-    fruits->fruits[i-1] = fruits->fruits[i];
-  }
-}
-
 
 // returns a FRUIT if one is found on the given point, else NULL
-FRUIT *fruit_is_on(FRUITS *fruits, int posy, int posx) {
-  POINT *point;
-  int i;
-
-  // iterate each fruit
-  for(i = 0; i < fruits->length; i++) {
-    // read the position of the current fruit
-    point = &fruits->fruits[i].point;
-    // check if the positions are matching
-    if(point->y == posy && point->x == posx) {
-      // return a pointer to the current fruit
-      return &fruits->fruits[i];
-    }
+FRUIT *get_fruit_on(GAME *game, int posy, int posx) {
+  FRUIT* fruit = get_fruit_addr(game, posy, posx);
+  if(fruit->point.ch == 0) {
+      return NULL;
   }
-  return NULL;
+  return fruit;
+}
+
+bool can_fruit_grow(GAME *game, int y, int x) {
+    if(snake_part_is_on(&game->snake, y, x) != NULL) {
+        return false;
+    }
+    if(get_fruit_on(game, y, x) != NULL) {
+        return false;
+    }
+    if(check_extended_border_collision(game, y, x)) {
+        return false;
+    }
+
+    return true;
 }
 
 // create a new fruit in the game
 void grow_fruit(GAME* game) {
+  if(game->fruits.allocated == 0) {
+    manage_fruit_memory(game);
+  }
+
   int randy,randx;
   // generate a new random position until a empty spot is found
   do {
     randy = rand() % game->rows;
     randx = rand() % game->columns;
-    // is nothing else there in the generated position?
-  } while (snake_part_is_on(&game->snake, randy, randx) != NULL || fruit_is_on(&game->fruits, randy, randx) != NULL || check_extended_border_collision(game, randy, randx));
 
-  game->fruits.length++;
-  // allocate memory for the new fruit
-  if(game->fruits.allocated == 0) {
-    // initialize the array with malloc if it is the first fruit in the array
-    game->fruits.fruits = malloc(sizeof(FRUIT) * game->fruits.length);
-    game->fruits.allocated = game->fruits.length;
-  } else if(game->fruits.allocated < game->fruits.length) {
-    // allocate more memory
-    game->fruits.allocated *= 2;
-    game->fruits.fruits = realloc(game->fruits.fruits, sizeof(FRUIT) * game->fruits.allocated);
-  }
+    // is nothing else there in the generated position?
+  } while(!can_fruit_grow(game, randy, randx));
+
+  manage_fruit_memory(game);
 
   // get a filled struct (containing the displayed char, the effect & co.) of the new fruit
-  get_fruit(&game->fruits.fruits[game->fruits.length - 1], randy, randx);
+  FRUIT *fruit = get_fruit_addr(game, randy, randx);
+  initialize_fruit(fruit, randy, randx);
+  draw_fruit(fruit);
 }
 
 
 // fill in data into a fruit struct
-void get_fruit(FRUIT *fruit, int posy, int posx) {
+void initialize_fruit(FRUIT *fruit, int posy, int posx) {
   // how the diffrent fruits are displayed
   static char chars[EFFECTS] = {'x', '@', '%', '&'};
   static int colors[EFFECTS] = { 4 ,  6 ,  3 ,  5 }; // see color definitions in the end of main.c
@@ -143,12 +146,10 @@ void get_fruit(FRUIT *fruit, int posy, int posx) {
 }
 
 // redraw all the fruits on the screen
-void redraw_fruits(FRUITS *fruits) {
-  int i;
-
+void redraw_fruits(GAME *game) {
   // iterate through each fruit.
-  for(i = 0; i < fruits->length; i++) {
+  for(int i = 0; i < game->fruits.allocated; i++) {
     // redraw it!
-    draw_fruit(&fruits->fruits[i]);
+    draw_fruit(&game->fruits.fruits[i]);
   }
 }

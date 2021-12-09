@@ -19,7 +19,7 @@ int check_fruit_collision(GAME* game, int cury, int curx) {
   for(x = startx; x < endx; x++) {
     for(y = starty; y < endy; y++) {
       // is a fruit on the current field?
-      if(fruit_is_on(&game->fruits, y, x) != NULL) {
+      if(get_fruit_on(game, y, x) != NULL) {
         // exclude the field in the middle
         if(!(curx == x && cury == y)) {
           // execute the handler for this field (to eat the fruit)
@@ -35,14 +35,14 @@ int check_fruit_collision(GAME* game, int cury, int curx) {
 // calls the effect of the fruit
 int check_fruit_collision_handler(GAME* game, int cury, int curx) {
   // the the fruit by the given position
-  FRUIT *fruit = fruit_is_on(&game->fruits, cury, curx);
+  FRUIT *fruit = get_fruit_on(game, cury, curx);
   // is one on this position?
   if(fruit != NULL) {
     // execute the effect of the fruit
     fruit->effect(game);
 
     // remove the fruit from the game
-    kill_fruit_by_ptr(&game->fruits, fruit);
+    kill_fruit(fruit);
   }
   return 1;
 }

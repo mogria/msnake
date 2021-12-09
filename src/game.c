@@ -62,9 +62,6 @@ void run() {
   game.snake.dir = DIR_LEFT;
 
   // create some fruits on the screen
-  // NOM, NOM, NOM
-  game.fruits.allocated = FRUITS_INIT_NUMBER;
-  game.fruits.fruits = malloc(sizeof(FRUIT) * FRUITS_INIT_NUMBER);
   for(i = 0; i < FRUITS_INIT_NUMBER; i++) {
     grow_fruit(&game);
   }
@@ -143,6 +140,7 @@ void run() {
       // use the terminal new size
       game.rows = current_rows;
       game.columns = current_columns;
+      manage_fruit_memory(&game);
 
       // get the time
       time(&pause_start);
@@ -197,12 +195,12 @@ void redraw_game(GAME *game) {
   // redraw the main window (containg the border and stuff)
   clear();
   draw_border(game);
-  
+
   // redraw the fruits
   redraw_fruits(&game->fruits);
 
   // redraw the snake
   redraw_snake(&game->snake);
-  redrawwin(stdscr);
+
   refresh();
 }
